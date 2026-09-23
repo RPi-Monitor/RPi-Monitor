@@ -1,4 +1,4 @@
-# RPi-Monotor Organization
+# RPi-Monitor Organization
 
 2026-07-14 is a great day... yes, this is the [French national day](https://en.wikipedia.org/wiki/Bastille_Day) but it’s also a new milestone for the **RPi-Monitor** project. Today, I created a GitHub organization so volunteers can join the project, contribute, and help ensure it keeps going.
 
