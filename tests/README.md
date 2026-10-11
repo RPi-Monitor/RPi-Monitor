@@ -2,7 +2,7 @@
 
 Run from the repository root on Linux:
 
-    RPIMONITOR_HOST_IPC_NS="$(readlink /proc/self/ns/ipc)" \\
+    RPIMONITOR_HOST_IPC_NS="$(readlink /proc/self/ns/ipc)" \
       unshare --user --map-current-user --ipc --fork -- \
       python3 tests/test_http_connection.py
 
