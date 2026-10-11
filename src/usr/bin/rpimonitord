@@ -445,7 +445,10 @@ sub DoGET
   }
 
   #$isvalid or $connection->send_error(404,"<br><b>$path</b> not in <br>". join ('<br>',@{$this->{'paths'}} )) and return;
-  $isvalid or $this->SendError(404);
+  if (! $isvalid) {
+    $this->SendError(404);
+    return;
+  }
 
   $path =~ /dynamic\.json/  and $this->SendStatus( $configuration ) and return;
   $path =~ /static\.json/  and $this->SendJSON($this->{'static'}) and return;
@@ -585,7 +588,7 @@ sub Run
   #Process requests
   for (;;){
     while ( $this->{'connection'} = $this->{'server'}->accept) {
-      while (my $request = $this->{'connection'}->get_request) {
+      if (my $request = $this->{'connection'}->get_request) {
         my $method = "Do".$request->method();
         $this->can($method) and $this->$method($request,$configuration);
       }
