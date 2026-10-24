@@ -6,7 +6,7 @@ FIXTURES_DIR="${REPO_ROOT}/tests/fixtures"
 
 # Start mock server if not running
 # Args: port, version, corrupt_checksum (0|1), omit_zip_asset (0|1),
-#       omit_sha256_asset (0|1), invalid_zip (0|1)
+#       omit_sha256_asset (0|1), invalid_zip (0|1), empty_zip (0|1)
 start_mock_server() {
     local port="${1:-8080}"
     local version="${2:-2.14}"
@@ -14,6 +14,7 @@ start_mock_server() {
     local omit_zip="${4:-0}"
     local omit_sha256="${5:-0}"
     local invalid_zip="${6:-0}"
+    local empty_zip="${7:-0}"
     local assets_dir="${REPO_ROOT}/build"
 
     # Ensure archive exists (unless testing a release that omits the ZIP asset)
@@ -29,6 +30,7 @@ start_mock_server() {
     MOCK_PORT="${port}" ASSETS_DIR="${assets_dir}" MOCK_VERSION="${version}" \
         MOCK_CORRUPT_CHECKSUM="${corrupt}" MOCK_OMIT_ZIP_ASSET="${omit_zip}" \
         MOCK_OMIT_SHA256_ASSET="${omit_sha256}" MOCK_INVALID_ZIP="${invalid_zip}" \
+        MOCK_EMPTY_ZIP="${empty_zip}" \
         python3 "${FIXTURES_DIR}/mock_github_server.py" &
     local pid=$!
 

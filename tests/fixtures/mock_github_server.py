@@ -18,6 +18,7 @@ CORRUPT_CHECKSUM = os.environ.get("MOCK_CORRUPT_CHECKSUM", "0") == "1"
 OMIT_ZIP_ASSET = os.environ.get("MOCK_OMIT_ZIP_ASSET", "0") == "1"
 OMIT_SHA256_ASSET = os.environ.get("MOCK_OMIT_SHA256_ASSET", "0") == "1"
 INVALID_ZIP = os.environ.get("MOCK_INVALID_ZIP", "0") == "1"
+EMPTY_ZIP = os.environ.get("MOCK_EMPTY_ZIP", "0") == "1"
 
 class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
     def _send_json(self, status_code, data):
@@ -122,6 +123,13 @@ class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
                 self.send_header("Content-Length", str(len(corrupt_body)))
                 self.end_headers()
                 self.wfile.write(corrupt_body)
+                return
+
+            if filename.endswith(".zip") and EMPTY_ZIP:
+                self.send_response(200)
+                self.send_header("Content-Type", "application/octet-stream")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
                 return
 
             if filename.endswith(".zip") and INVALID_ZIP:

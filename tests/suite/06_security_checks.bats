@@ -53,6 +53,16 @@ teardown() {
     [[ "$output" =~ "Downloaded file is not a valid ZIP archive" ]]
 }
 
+@test "Security: rejects empty downloaded ZIP" {
+    # empty_zip=1 — Content-Length 0 body
+    start_mock_server 8081 "2.14" 0 0 0 0 1
+    export GITHUB_API_BASE="http://127.0.0.1:8081"
+
+    run "${INSTALL_SH}" -y --no-service
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "Downloaded file is empty" ]]
+}
+
 @test "Security: refuses installation if Debian package rpimonitor is already installed" {
     local fake_bin_dir="/tmp/fake_bin_$$"
     mkdir -p "${fake_bin_dir}"
