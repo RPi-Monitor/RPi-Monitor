@@ -12,7 +12,7 @@ import socket
 import subprocess
 import time
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import pexpect
 import requests
@@ -29,6 +29,7 @@ class RPiMonitorTestBase:
     # Configuration - update these paths as needed
     ROOT_DIR = Path(__file__).parent.parent.absolute()
     BINARY = f"{ROOT_DIR}/src/usr/bin/rpimonitord"
+    UNIT_LOADER = f"{ROOT_DIR}/tests/perl_unit.pl"
 
     # Set by start_repl / launch_rpimonitord. Declared here because pytest
     # refuses to collect a test class that defines __init__.
@@ -40,7 +41,11 @@ class RPiMonitorTestBase:
         """Prefix Devel::Cover instrumentation when PERL_COVERAGE=1; else run binary directly."""
         if os.environ.get("PERL_COVERAGE", "0") == "1":
             cover_db_path = f"{cls.ROOT_DIR}/tests/cover_db"
-            return ["perl", f"-MDevel::Cover=-db,{cover_db_path}", binary] + list(args)
+            # -silent: the banner goes to STDOUT and would corrupt the SUT output.
+            # +ignore: the loader is test tooling; recorded under a cwd-relative path,
+            # its MD5 digest fails in later runs and warns on STDERR.
+            options = f"-db,{cover_db_path},-silent,1,+ignore,perl_unit\\.pl"
+            return ["perl", f"-MDevel::Cover={options}", binary] + list(args)
         return [binary] + list(args)
 
     def start_repl(self, timeout: int = 10) -> pexpect.spawn:
@@ -48,6 +53,19 @@ class RPiMonitorTestBase:
         argv = self._build_perl_command(self.BINARY, ["-i"])
         self.repl = pexpect.spawn(argv[0], args=argv[1:], encoding="utf-8", timeout=timeout)
         return self.repl
+
+    @classmethod
+    def run_perl_unit(cls, code: str, *args: str) -> Any:
+        """Evaluate Perl ``code`` against rpimonitord's packages, main section excluded.
+
+        ``code`` sees ``args`` in ``@ARGV``; its result comes back decoded from JSON.
+        """
+        command = cls._build_perl_command(cls.UNIT_LOADER, [cls.BINARY, code, *args])
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        # Raised by hand: CalledProcessError would hide the Perl error held in stderr.
+        if result.returncode != 0:
+            raise RuntimeError(f"perl_unit.pl exited {result.returncode}: {result.stderr.strip()}")
+        return json.loads(result.stdout)
 
     def teardown_method(self):
         """Close the processes after each test."""
