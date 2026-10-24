@@ -22,6 +22,17 @@ teardown() {
     [[ "$output" =~ "SHA256 checksum mismatch" ]]
 }
 
+@test "Security: rejects release when distribution ZIP asset is missing" {
+    # corrupt=0, omit_zip=1 — release JSON has no rpimonitor-*.zip asset
+    start_mock_server 8081 "2.14" 0 1
+    export GITHUB_API_BASE="http://127.0.0.1:8081"
+
+    run "${INSTALL_SH}" -y --no-service
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "Asset 'rpimonitor-2.14.zip' not found in release" ]]
+    [[ "$output" =~ "Available assets:" ]]
+}
+
 @test "Security: refuses installation if Debian package rpimonitor is already installed" {
     local fake_bin_dir="/tmp/fake_bin_$$"
     mkdir -p "${fake_bin_dir}"

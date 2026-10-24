@@ -15,6 +15,7 @@ PORT = int(os.environ.get("MOCK_PORT", 8080))
 ASSETS_DIR = os.environ.get("ASSETS_DIR", "/tmp/mock_assets")
 DEFAULT_VERSION = os.environ.get("MOCK_VERSION", "2.14")
 CORRUPT_CHECKSUM = os.environ.get("MOCK_CORRUPT_CHECKSUM", "0") == "1"
+OMIT_ZIP_ASSET = os.environ.get("MOCK_OMIT_ZIP_ASSET", "0") == "1"
 
 class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
     def _send_json(self, status_code, data):
@@ -47,21 +48,23 @@ class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
         asset_name = f"rpimonitor-{version}.zip"
         sha_name = f"{asset_name}.sha256"
 
+        assets = []
+        if not OMIT_ZIP_ASSET:
+            assets.append({
+                "name": asset_name,
+                "browser_download_url": f"{base_url}/download/{asset_name}"
+            })
+        assets.append({
+            "name": sha_name,
+            "browser_download_url": f"{base_url}/download/{sha_name}"
+        })
+
         return {
             "tag_name": tag_name,
             "draft": False,
             "prerelease": is_prerelease,
             "published_at": published_at,
-            "assets": [
-                {
-                    "name": asset_name,
-                    "browser_download_url": f"{base_url}/download/{asset_name}"
-                },
-                {
-                    "name": sha_name,
-                    "browser_download_url": f"{base_url}/download/{sha_name}"
-                }
-            ]
+            "assets": assets,
         }
 
     def do_GET(self):

@@ -5,14 +5,16 @@ INSTALL_SH="${REPO_ROOT}/install.sh"
 FIXTURES_DIR="${REPO_ROOT}/tests/fixtures"
 
 # Start mock server if not running
+# Args: port, version, corrupt_checksum (0|1), omit_zip_asset (0|1)
 start_mock_server() {
     local port="${1:-8080}"
     local version="${2:-2.14}"
     local corrupt="${3:-0}"
+    local omit_zip="${4:-0}"
     local assets_dir="${REPO_ROOT}/build"
 
-    # Ensure archive exists
-    if [[ ! -f "${assets_dir}/rpimonitor-${version}.zip" ]]; then
+    # Ensure archive exists (unless testing a release that omits the ZIP asset)
+    if [[ "${omit_zip}" != "1" && ! -f "${assets_dir}/rpimonitor-${version}.zip" ]]; then
         "${REPO_ROOT}/tools/build-zip.sh" "${version}" >/dev/null 2>&1
     fi
 
@@ -21,7 +23,8 @@ start_mock_server() {
         return 0
     fi
 
-    MOCK_PORT="${port}" ASSETS_DIR="${assets_dir}" MOCK_VERSION="${version}" MOCK_CORRUPT_CHECKSUM="${corrupt}" \
+    MOCK_PORT="${port}" ASSETS_DIR="${assets_dir}" MOCK_VERSION="${version}" \
+        MOCK_CORRUPT_CHECKSUM="${corrupt}" MOCK_OMIT_ZIP_ASSET="${omit_zip}" \
         python3 "${FIXTURES_DIR}/mock_github_server.py" &
     local pid=$!
 
