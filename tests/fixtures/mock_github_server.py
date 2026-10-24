@@ -41,7 +41,8 @@ class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content)
 
-    def _get_release_dict(self, tag_name, version, is_prerelease=False):
+    def _get_release_dict(self, tag_name, version, is_prerelease=False,
+                          published_at="2026-01-01T00:00:00Z"):
         base_url = f"http://{self.headers.get('Host', f'127.0.0.1:{PORT}')}"
         asset_name = f"rpimonitor-{version}.zip"
         sha_name = f"{asset_name}.sha256"
@@ -50,7 +51,7 @@ class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
             "tag_name": tag_name,
             "draft": False,
             "prerelease": is_prerelease,
-            "published_at": "2026-01-01T00:00:00Z",
+            "published_at": published_at,
             "assets": [
                 {
                     "name": asset_name,
@@ -84,9 +85,13 @@ class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
         # /releases?per_page=100 or /releases
         if "/releases" in path and not path.endswith("/latest") and "/tags/" not in path:
             version = DEFAULT_VERSION
+            # Pre-release is newer by published_at so --pre-release selects it
+            # deterministically over the stable release.
             releases = [
-                self._get_release_dict(f"v{version}", version, False),
-                self._get_release_dict(f"v{version}-rc1", f"{version}-rc1", True)
+                self._get_release_dict(f"v{version}", version, False,
+                                       "2026-01-01T00:00:00Z"),
+                self._get_release_dict(f"v{version}-rc1", f"{version}-rc1", True,
+                                       "2026-02-01T00:00:00Z"),
             ]
             self._send_json(200, releases)
             return

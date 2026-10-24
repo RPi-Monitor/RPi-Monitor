@@ -33,3 +33,16 @@ teardown() {
     [[ "$output" =~ "Selected release: v2.14" ]]
     [[ "$output" =~ "Dry run completed: the system was not modified." ]]
 }
+
+@test "Dry Run: --pre-release selects newest release including pre-releases" {
+    # Mock /releases lists v2.14-rc1 as newest; ensure its asset exists.
+    if [[ ! -f "${REPO_ROOT}/build/rpimonitor-2.14-rc1.zip" ]]; then
+        "${REPO_ROOT}/tools/build-zip.sh" "2.14-rc1" >/dev/null 2>&1
+    fi
+
+    run "${INSTALL_SH}" -y --dry-run --no-service --pre-release
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ "Fetching newest release (pre-releases included)" ]]
+    [[ "$output" =~ "Selected release: v2.14-rc1" ]]
+    [[ "$output" =~ "Dry run completed: the system was not modified." ]]
+}
