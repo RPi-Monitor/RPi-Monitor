@@ -33,6 +33,16 @@ teardown() {
     [[ "$output" =~ "Available assets:" ]]
 }
 
+@test "Security: rejects release when SHA256 asset is missing" {
+    # corrupt=0, omit_zip=0, omit_sha256=1
+    start_mock_server 8081 "2.14" 0 0 1
+    export GITHUB_API_BASE="http://127.0.0.1:8081"
+
+    run "${INSTALL_SH}" -y --no-service
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "Asset 'rpimonitor-2.14.zip.sha256' not found in release" ]]
+}
+
 @test "Security: refuses installation if Debian package rpimonitor is already installed" {
     local fake_bin_dir="/tmp/fake_bin_$$"
     mkdir -p "${fake_bin_dir}"

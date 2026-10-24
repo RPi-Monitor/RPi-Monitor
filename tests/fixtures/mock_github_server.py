@@ -16,6 +16,7 @@ ASSETS_DIR = os.environ.get("ASSETS_DIR", "/tmp/mock_assets")
 DEFAULT_VERSION = os.environ.get("MOCK_VERSION", "2.14")
 CORRUPT_CHECKSUM = os.environ.get("MOCK_CORRUPT_CHECKSUM", "0") == "1"
 OMIT_ZIP_ASSET = os.environ.get("MOCK_OMIT_ZIP_ASSET", "0") == "1"
+OMIT_SHA256_ASSET = os.environ.get("MOCK_OMIT_SHA256_ASSET", "0") == "1"
 
 class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
     def _send_json(self, status_code, data):
@@ -54,10 +55,11 @@ class GitHubMockHandler(http.server.BaseHTTPRequestHandler):
                 "name": asset_name,
                 "browser_download_url": f"{base_url}/download/{asset_name}"
             })
-        assets.append({
-            "name": sha_name,
-            "browser_download_url": f"{base_url}/download/{sha_name}"
-        })
+        if not OMIT_SHA256_ASSET:
+            assets.append({
+                "name": sha_name,
+                "browser_download_url": f"{base_url}/download/{sha_name}"
+            })
 
         return {
             "tag_name": tag_name,
