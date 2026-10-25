@@ -91,7 +91,7 @@ fn loadfile_preserves_nested_keys_and_values_containing_equals() {
     );
     let actual = run_unit(
         &directory,
-        "my $c = Configuration->new; $c->LoadFile($_) foreach @ARGV; { page => $c->{web}->{page}, dynamic => $c->{dynamic} }",
+        "my $c = Configuration->new; $c->LoadFile($_) foreach @ARGV; +{ page => $c->{web}->{page}, dynamic => $c->{dynamic} }",
         &[config.to_str().expect("UTF-8 config path")],
     );
     assert_eq!(
