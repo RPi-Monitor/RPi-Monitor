@@ -77,9 +77,10 @@ fn version_options_print_version_to_stderr_and_exit_with_perl_die_status() {
         .and_then(Path::parent)
         .expect("resolve repository root")
         .to_path_buf();
-    let temp_dir = TempDir::new();
 
     for option in ["-V", "--Version"] {
+        // pytest creates a separate temporary directory for each parametrized case.
+        let temp_dir = TempDir::new();
         let output = launch_version_option(option, &root, temp_dir.path());
 
         // Native Perl exits 255 for die; Devel::Cover may rewrite this to 2.
