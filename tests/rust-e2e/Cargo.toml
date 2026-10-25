@@ -9,3 +9,7 @@ publish = false
 [[test]]
 name = "version"
 path = "tests/version.rs"
+
+[[test]]
+name = "cli_addr"
+path = "tests/cli_addr.rs"
