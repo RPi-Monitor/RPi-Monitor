@@ -570,6 +570,13 @@ sub Run
   setgid($configuration->{'daemon'}->{'gid'});
   setuid($configuration->{'daemon'}->{'uid'});
 
+  # Setup signal handler for graceful shutdown
+  $SIG{TERM} = sub {
+    $this->Debug(1,"Server received SIGTERM, shutting down gracefully");
+    $this->{'server'}->close();
+    exit(0);
+  };
+
   #Process requests
   for (;;){
     while ( $this->{'connection'} = $this->{'server'}->accept) {
@@ -780,7 +787,18 @@ sub Process
         $i++;
       }
     };
-    $pid and kill( 9, $pid);
+    if ($pid) {
+      # Try graceful termination first
+      kill(15, $pid);  # SIGTERM
+      # Wait a bit for graceful shutdown
+      my $wait_time = 0;
+      while (kill(0, $pid) && $wait_time < 2) {
+        sleep 1;
+        $wait_time++;
+      }
+      # Force kill if still alive
+      kill(9, $pid) if kill(0, $pid);
+    }
   }
   #print Data::Dumper->Dump([$list]);
   #print Data::Dumper->Dump([$this->{'dynamic'}]);
@@ -805,7 +823,18 @@ sub SendAlarm
     alarm 0;
     $pid = 0;
   };
-  $pid and kill( 9, $pid);
+  if ($pid) {
+    # Try graceful termination first
+    kill(15, $pid);  # SIGTERM
+    # Wait a bit for graceful shutdown
+    my $wait_time = 0;
+    while (kill(0, $pid) && $wait_time < 2) {
+      sleep 1;
+      $wait_time++;
+    }
+    # Force kill if still alive
+    kill(9, $pid) if kill(0, $pid);
+  }
 }
 
 sub Status
@@ -1436,20 +1465,41 @@ sub StartServer
   my $serverpid;
   unless ( $configuration->{'daemon'}->{'noserver'} ){
     unless ($serverpid = fork) {
-      $pidfile and writePID();
       my $server = Server->new();
       $server->Run($configuration,$monitor);
       exit;
     }
+    $pidfile and writePID();
   }
   return $serverpid;
 }
 
 my $configuration = Configuration->new();
+my $serverpid;
 
 sub stop
 {
+  $configuration->Debug(1,"Stop signal received");
   $configuration->{'daemon'}->{'delay'} = 0;
+  
+  # Try to shutdown server gracefully if possible
+  if ($serverpid && kill(0, $serverpid)) {
+    $configuration->Debug(1,"Sending SIGTERM to server process $serverpid");
+    kill(15, $serverpid);  # SIGTERM for graceful shutdown
+    
+    # Wait a bit for graceful shutdown
+    my $wait_time = 0;
+    while (kill(0, $serverpid) && $wait_time < 5) {
+      sleep 1;
+      $wait_time++;
+    }
+    
+    # If server didn't stop, force kill
+    if (kill(0, $serverpid)) {
+      $configuration->Debug(1,"Server didn't stop gracefully, sending SIGKILL");
+      kill(9, $serverpid);  # SIGKILL as last resort
+    }
+  }
 }
 
 sub interactive
@@ -1515,8 +1565,7 @@ if ( basename($0) =~ /rpimonitord-snmp/ ) {
 $pidfile and &daemonize($configuration);
 
 $SIG{INT}    = sub { stop(); }; # catch Ctrl+C
-
-my $serverpid;
+$SIG{TERM}   = sub { stop(); }; # catch SIGTERM
 
 # Manage loglevel
 $SIG{USR1}   = sub { ($loglevel < 5 ) and ++$loglevel and print STDERR "[", strftime("%Y/%m/%d-%H:%M:%S", localtime), "] Change loglevel to ", $loglevel ,"\n"; };
@@ -1549,3 +1598,4 @@ for (;;) {
   $serverpid and kill (9,$serverpid);
   $configuration->{'daemon'}->{'delay'} or last; #delay == 0, it means we should stop the process.
 }
+print STDERR "RPi-Monitor has been terminated."
