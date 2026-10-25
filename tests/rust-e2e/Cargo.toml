@@ -21,3 +21,7 @@ path = "tests/configuration_unit.rs"
 [[test]]
 name = "configuration_defaults"
 path = "tests/configuration_defaults.rs"
+
+[[test]]
+name = "monitor_extraction"
+path = "tests/monitor_extraction.rs"
