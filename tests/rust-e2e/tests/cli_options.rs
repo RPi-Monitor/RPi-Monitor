@@ -321,27 +321,6 @@ fn keep_option_preserves_existing_log_file() {
 }
 
 #[test]
-fn logfile_option_creates_custom_log_file() {
-    let temp_dir = TempDir::new("rpimonitor-e2e-cli-logfile");
-    let config = minimal_config(&temp_dir, "test_logfile");
-    let log_file = temp_dir.path().join("custom.log");
-    let args = [
-        OsString::from("-c"),
-        config.into_os_string(),
-        OsString::from("-l"),
-        log_file.clone().into_os_string(),
-        OsString::from("-s"),
-    ];
-    let output = run(&args, temp_dir.path());
-    assert_cli_success_or_expected_exit("-l/--logfile", &output);
-    assert!(
-        log_file.exists(),
-        "-l/--logfile: custom log file was not created at {}",
-        log_file.display()
-    );
-}
-
-#[test]
 fn long_logfile_option_creates_custom_log_file() {
     assert_logfile_option("--logfile");
 }
