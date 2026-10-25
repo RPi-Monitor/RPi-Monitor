@@ -1,0 +1,5 @@
+#!/bin/bash
+cover -delete -db tests/cover_db                                                                       ✔  9s  
+PERL_COVERAGE=1 cargo test --manifest-path tests/rust-e2e/Cargo.toml
+cover -report html_basic -outputfile coverage.html tests/cover_db
+firefox /workspace/RPi-Monitor/tests/cover_db/coverage.html 
