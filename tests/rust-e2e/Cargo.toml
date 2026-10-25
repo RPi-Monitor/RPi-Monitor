@@ -7,21 +7,5 @@ publish = false
 # Standalone test harness; no third-party dependencies.
 
 [[test]]
-name = "version"
-path = "tests/version.rs"
-
-[[test]]
-name = "cli_addr"
-path = "tests/cli_addr.rs"
-
-[[test]]
-name = "cli_delay"
-path = "tests/cli_delay.rs"
-
-[[test]]
-name = "cli_noserver"
-path = "tests/cli_noserver.rs"
-
-[[test]]
-name = "cli_port"
-path = "tests/cli_port.rs"
+name = "cli_options"
+path = "tests/cli_options.rs"
