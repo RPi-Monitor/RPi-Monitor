@@ -1,2 +1,4 @@
 build/
 coverage/
+**/cover_db/**
+**/__pycache__/**
