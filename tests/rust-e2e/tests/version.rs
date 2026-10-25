@@ -33,9 +33,21 @@ impl Drop for TempDir {
     }
 }
 
+fn repository_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(Path::parent)
+        .expect("resolve repository root")
+        .to_path_buf()
+}
+
 fn launch_version_option(option: &str, root: &Path, working_dir: &Path) -> Output {
     let binary = root.join(BINARY_RELATIVE_PATH);
-    assert!(binary.is_file(), "rpimonitord executable not found at {}", binary.display());
+    assert!(
+        binary.is_file(),
+        "rpimonitord executable not found at {}",
+        binary.display()
+    );
 
     let mut command = if env::var("PERL_COVERAGE").as_deref() == Ok("1") {
         let coverage_db = root.join("tests/cover_db");
@@ -70,34 +82,39 @@ fn launch_version_option(option: &str, root: &Path, working_dir: &Path) -> Outpu
     command.output().expect("launch rpimonitord")
 }
 
+fn assert_version_option(option: &str) {
+    let root = repository_root();
+    // Each test gets its own temporary working directory, matching pytest's parametrization.
+    let temp_dir = TempDir::new();
+    let output = launch_version_option(option, &root, temp_dir.path());
+
+    // Native Perl exits 255 for die; Devel::Cover may rewrite this to 2.
+    assert!(
+        matches!(output.status.code(), Some(2 | 255)),
+        "{option}: expected die exit (2 or 255), got {:?}; stdout={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let expected = format!(
+        "{} version {{DEVELOPMENT}}",
+        root.join(BINARY_RELATIVE_PATH).display()
+    );
+    let stderr = String::from_utf8(output.stderr).expect("stderr should be UTF-8");
+    assert_eq!(
+        stderr.trim(),
+        expected,
+        "{option}: version output did not match expected output"
+    );
+}
+
 #[test]
-fn version_options_print_version_to_stderr_and_exit_with_perl_die_status() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .and_then(Path::parent)
-        .expect("resolve repository root")
-        .to_path_buf();
+fn short_version_option_prints_version_to_stderr() {
+    assert_version_option("-V");
+}
 
-    for option in ["-V", "--Version"] {
-        // pytest creates a separate temporary directory for each parametrized case.
-        let temp_dir = TempDir::new();
-        let output = launch_version_option(option, &root, temp_dir.path());
-
-        // Native Perl exits 255 for die; Devel::Cover may rewrite this to 2.
-        assert!(
-            matches!(output.status.code(), Some(2 | 255)),
-            "{option}: expected die exit (2 or 255), got {:?}; stdout={:?}; stderr={:?}",
-            output.status.code(),
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        );
-
-        let expected = format!("{} version {{DEVELOPMENT}}", root.join(BINARY_RELATIVE_PATH).display());
-        let stderr = String::from_utf8(output.stderr).expect("stderr should be UTF-8");
-        assert_eq!(
-            stderr.trim(),
-            expected,
-            "{option}: version output did not match expected output"
-        );
-    }
+#[test]
+fn long_version_option_prints_version_to_stderr() {
+    assert_version_option("--Version");
 }
