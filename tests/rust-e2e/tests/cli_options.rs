@@ -242,7 +242,15 @@ fn assert_readonly_option(option: &str) {
         OsString::from("-s"),
     ];
     let output = run(&args, temp_dir.path());
-    assert_cli_success_or_expected_exit(option, &output);
+    // With -s/--show, rpimonitord deliberately dies after dumping the configuration.
+    // A direct Perl invocation reports that die as exit code 255; Devel::Cover may use 2.
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "{option}: expected exit code 0, 2, or 255 for --show, got {:?}; stdout={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
     let stdout = String::from_utf8(output.stdout).expect("stdout should be UTF-8");
     assert!(
         stdout.contains("'readonly' => 1"),
