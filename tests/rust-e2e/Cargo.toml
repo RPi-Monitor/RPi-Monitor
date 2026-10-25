@@ -13,3 +13,7 @@ path = "tests/cli_options.rs"
 [[test]]
 name = "configuration_loadfile"
 path = "tests/configuration_loadfile.rs"
+
+[[test]]
+name = "configuration_unit"
+path = "tests/configuration_unit.rs"
