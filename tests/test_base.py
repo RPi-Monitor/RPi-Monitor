@@ -168,7 +168,7 @@ class RPiMonitorTestBase:
                     return
                 time.sleep(0.05)
 
-    def wait_for_port(self, host: str = "127.0.0.1", *, port: int, timeout: float = 1.0, interval: float = 0.1) -> bool:
+    def wait_for_port(self, host: str = "127.0.0.1", port: int = 8888, timeout: float = 1.0, interval: float = 0.1) -> bool:
         """Wait for a TCP ``port`` on ``host`` to accept connections.
 
         ``port`` is keyword-only and required -- each test picks a randomized
