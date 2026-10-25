@@ -394,9 +394,12 @@ fn assert_background_option(option: &str) {
 
     let output = run(&args, temp_dir.path());
     assert_cli_success_or_expected_exit(option, &output);
-    // The daemon forks, so wait briefly for it to finish writing its PID file.
+    // The daemon forks a main process and worker processes; wait for their PIDs.
     for _ in 0..30 {
-        if pid_file.is_file() {
+        let pid_count = std::fs::read_to_string(&pid_file)
+            .map(|contents| contents.split_whitespace().count())
+            .unwrap_or(0);
+        if pid_count >= 3 {
             break;
         }
         std::thread::sleep(std::time::Duration::from_millis(100));
