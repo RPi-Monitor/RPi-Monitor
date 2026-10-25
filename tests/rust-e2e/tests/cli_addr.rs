@@ -2,8 +2,6 @@ use std::ffi::OsString;
 
 use rpimonitor_e2e::{run, write_config, TempDir};
 
-const BINARY_RELATIVE_PATH: &str = "src/usr/bin/rpimonitord";
-
 fn run_address_option(option: &str) -> std::process::Output {
     let temp_dir = TempDir::new("rpimonitor-e2e-cli-addr");
     let config = write_config(
@@ -19,7 +17,7 @@ fn run_address_option(option: &str) -> std::process::Output {
         OsString::from("-s"),
     ];
 
-    run(BINARY_RELATIVE_PATH, &args, temp_dir.path())
+    run(&args, temp_dir.path())
 }
 
 fn assert_address_option(option: &str) {
