@@ -1,2 +1,4 @@
 build/
 coverage/
+**/target/**
+tests/rust-e2e/Cargo.lock
