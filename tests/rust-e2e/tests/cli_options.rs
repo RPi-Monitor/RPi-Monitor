@@ -198,7 +198,7 @@ fn minimal_config(temp_dir: &TempDir, datastore: &str) -> std::path::PathBuf {
         temp_dir.path(),
         "cli_options_extra.conf",
         &format!(
-            "\\ndaemon.delay=1\\ndaemon.datastore=/tmp/{datastore}\\ndaemon.webroot=/tmp/test_web\\n"
+            "\ndaemon.delay=1\ndaemon.datastore=/tmp/{datastore}\ndaemon.webroot=/tmp/test_web\n"
         ),
     )
 }
@@ -301,7 +301,7 @@ fn assert_verbose_option(option: &str) {
 #[test]
 fn keep_option_preserves_existing_log_file() {
     let temp_dir = TempDir::new("rpimonitor-e2e-cli-keep");
-    let log_file = write_config(temp_dir.path(), "existing.log", "Existing log content\\n");
+    let log_file = write_config(temp_dir.path(), "existing.log", "Existing log content\n");
     let config = minimal_config(&temp_dir, "test_keep");
     let args = [
         OsString::from("-c"),
@@ -394,22 +394,31 @@ fn assert_background_option(option: &str) {
 
     let output = run(&args, temp_dir.path());
     assert_cli_success_or_expected_exit(option, &output);
+    // The daemon forks, so wait briefly for it to finish writing its PID file.
+    for _ in 0..30 {
+        if pid_file.is_file() {
+            break;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
     assert!(
-        pid_file.exists(),
+        pid_file.is_file(),
         "{option}: PID file was not created at {}",
         pid_file.display()
     );
 
-    let pid = std::fs::read_to_string(&pid_file)
+    let pids = std::fs::read_to_string(&pid_file)
         .expect("PID file should be readable")
-        .trim()
-        .to_owned();
-    assert!(!pid.is_empty(), "{option}: PID file is empty");
+        .split_whitespace()
+        .map(str::to_owned)
+        .collect::<Vec<_>>();
+    assert!(!pids.is_empty(), "{option}: PID file is empty");
 
-    // Stop the background daemon started by this test.
-    let status = std::process::Command::new("kill")
-        .args(["-TERM", &pid])
-        .status()
-        .expect("invoke kill to stop test daemon");
-    assert!(status.success(), "{option}: failed to stop daemon PID {pid}");
+    // The daemon writes the main process and worker PIDs to this file.
+    for pid in pids {
+        let _ = std::process::Command::new("kill")
+            .args(["-TERM", &pid])
+            .status()
+            .expect("invoke kill to stop test daemon");
+    }
 }
