@@ -39,7 +39,11 @@ fn run_address_option(option: &str) -> Output {
         .and_then(Path::parent)
         .expect("resolve repository root");
     let binary = root.join(BINARY_RELATIVE_PATH);
-    assert!(binary.is_file(), "rpimonitord executable not found at {}", binary.display());
+    assert!(
+        binary.is_file(),
+        "rpimonitord executable not found at {}",
+        binary.display()
+    );
 
     let temp_dir = TempDir::new();
     let config = temp_dir.path().join("cli_options_1.conf");
@@ -52,7 +56,7 @@ fn run_address_option(option: &str) -> Output {
     let mut command = if env::var("PERL_COVERAGE").as_deref() == Ok("1") {
         let coverage_db = root.join("tests/cover_db");
         let coverage_options = format!(
-            "-MDevel::Cover=-db,{},-silent,1,+ignore,perl\\.pl",
+            "-MDevel::Cover=-db,{},-silent,1,+ignore,perl_unit\\.pl",
             coverage_db.display()
         );
         let mut cmd = Command::new("perl");
