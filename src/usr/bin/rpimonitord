@@ -79,14 +79,19 @@ sub Load
   $_ = abs_path($0);
   my ($path,$file) = /(.*)\/([^\/]*)$/;
 
+  
   # Add default configuration file if not already defined by command line
   if ( !@{$this->{'daemon'}->{'confFiles'}} ) {
     push(@{$this->{'daemon'}->{'confFiles'}},"/etc/rpimonitor/data.conf");
     push(@{$this->{'daemon'}->{'confFiles'}},"/etc/rpimonitor/daemon.conf");
+  }else{
+    foreach ( @{$this->{'daemon'}->{'confFiles'}} ) {
+      -f $_ or die "ERROR: File \"$_\" doesn't exist.\n";
+    }
   }
 
   foreach ( @{$this->{'daemon'}->{'confFiles'}} ) {
-    $this->LoadFile($_);
+    -f $_ and $this->LoadFile($_);
   }
   delete($this->{'daemon'}->{'confFiles'});
 
@@ -113,13 +118,17 @@ sub Load
   $this->{'daemon'}->{'gid'} = getgrnam($this->{'daemon'}->{'group'})  || 1000;
   $this->{'daemon'}->{'uid'} = getpwnam($this->{'daemon'}->{'user'}) || 1000;
 
-  if ( ! $this->{'daemon'}->{'readonly'} ){
+  if ( ! $this->{'daemon'}->{'readonly'} || $this->{'show'} ){
     # Check rrd directory and files and create them if they are missing
+    # Also create directory in show mode to avoid errors
     # Create storage directory if needed
     -d "$this->{'daemon'}->{'datastore'}/stat" or mkdir "$this->{'daemon'}->{'datastore'}/stat";
-    # Create empty file at each start
-    $this->CreateRRD( "$this->{'daemon'}->{'datastore'}/stat/empty.rrd", 'empty', 'GAUGE', 'U', 'U' );
-    chown($this->{'daemon'}->{'uid'},$this->{'daemon'}->{'gid'},"$this->{'daemon'}->{'datastore'}/stat/empty.rrd");
+    
+    # Create empty file at each start (only if not readonly)
+    if ( ! $this->{'daemon'}->{'readonly'} ) {
+      $this->CreateRRD( "$this->{'daemon'}->{'datastore'}/stat/empty.rrd", 'empty', 'GAUGE', 'U', 'U' );
+      chown($this->{'daemon'}->{'uid'},$this->{'daemon'}->{'gid'},"$this->{'daemon'}->{'datastore'}/stat/empty.rrd");
+    }
   }
 
   #print Data::Dumper->Dump([$this->{'daemon'}]);
@@ -1144,8 +1153,8 @@ sub PrintConfiguration
 
   my $configuration = Configuration->new();
   $configuration->Load();
-  my $id = ( scalar @{$configuration->{$type}} ) + 1;
-
+  my $id = (exists $configuration->{$type}) ? scalar @{$configuration->{$type}} + 1 : 1;
+  
   $this->Title();
   print " We have now defined all the parameters allowing RPi-Monitor to\n";
   print " extract the data from the system. Here is a template of configuration\n";
