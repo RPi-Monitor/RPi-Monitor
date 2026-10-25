@@ -231,7 +231,7 @@ fn assert_readonly_option(option: &str) {
         temp_dir.path(),
         "cli_options_readonly.conf",
         &format!(
-            "\\ndaemon.delay=1\\ndaemon.datastore={}\\ndaemon.webroot=/tmp/test_web\\n",
+            "\ndaemon.delay=1\ndaemon.datastore={}\ndaemon.webroot=/tmp/test_web\n",
             datastore.display()
         ),
     );
