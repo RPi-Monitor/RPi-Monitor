@@ -17,3 +17,7 @@ path = "tests/configuration_loadfile.rs"
 [[test]]
 name = "configuration_unit"
 path = "tests/configuration_unit.rs"
+
+[[test]]
+name = "configuration_defaults"
+path = "tests/configuration_defaults.rs"
