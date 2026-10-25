@@ -225,7 +225,16 @@ fn long_readonly_option_enables_readonly_mode() {
 
 fn assert_readonly_option(option: &str) {
     let temp_dir = TempDir::new("rpimonitor-e2e-cli-readonly");
-    let config = minimal_config(&temp_dir, "test_readonly");
+    // Each test invocation needs its own datastore because Cargo runs tests concurrently.
+    let datastore = temp_dir.path().join("test_readonly");
+    let config = write_config(
+        temp_dir.path(),
+        "cli_options_readonly.conf",
+        &format!(
+            "\\ndaemon.delay=1\\ndaemon.datastore={}\\ndaemon.webroot=/tmp/test_web\\n",
+            datastore.display()
+        ),
+    );
     let args = [
         OsString::from("-c"),
         config.into_os_string(),
