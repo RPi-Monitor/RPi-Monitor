@@ -93,3 +93,39 @@ pub fn run(args: &[OsString], working_dir: &Path) -> Output {
 
     command.output().expect("launch rpimonitord")
 }
+
+
+/// Evaluate an expression against rpimonitord's Perl packages without running
+/// the daemon's `package main` section, using the same loader as the pytest harness.
+pub fn run_perl_unit(expression: &str, args: &[OsString], working_dir: &Path) -> Output {
+    let root = repository_root();
+    let binary = binary_path();
+    let loader = root.join("tests/perl_unit.pl");
+    assert!(binary.is_file(), "rpimonitord executable not found at {}", binary.display());
+    assert!(loader.is_file(), "Perl unit-test loader not found at {}", loader.display());
+
+    let mut command = Command::new("perl");
+    if env::var("PERL_COVERAGE").as_deref() == Ok("1") {
+        let coverage_db = root.join("tests/cover_db");
+        let coverage_options = format!(
+            "-MDevel::Cover=-db,{},-silent,1,+ignore,perl_unit\\.pl",
+            coverage_db.display()
+        );
+        command.arg(coverage_options);
+    }
+    command.arg(loader).arg(binary).arg(expression).args(args);
+
+    command.current_dir(working_dir).env_clear();
+    for key in ["PATH", "HOME"] {
+        if let Some(value) = env::var_os(key) {
+            command.env(key, value);
+        }
+    }
+    command
+        .env("LC_ALL", "C")
+        .env("LANGUAGE", "C")
+        .env("LANG", "C")
+        .env("LC_CTYPE", "C");
+
+    command.output().expect("launch Perl unit-test loader")
+}
