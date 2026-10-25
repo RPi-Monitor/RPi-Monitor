@@ -70,3 +70,32 @@ fn include_directive_ignores_a_missing_target() {
     );
     assert_eq!(actual, r#"[{"name":"parent"}]"#);
 }
+#[test]
+fn interval_combination_returns_the_least_common_multiple() {
+    let directory = TempDir::new("rpimonitor-interval-lcm");
+    let actual = run_unit(
+        &directory,
+        "my $c = Configuration->new; [$c->GreatestCommonDivisor(2, 3), $c->GreatestCommonDivisor(4, 6), $c->GreatestCommonDivisor(5, 10)]",
+        &[],
+    );
+    assert_eq!(actual, "[6,12,10]");
+}
+
+#[test]
+fn loadfile_preserves_nested_keys_and_values_containing_equals() {
+    let directory = TempDir::new("rpimonitor-config-nested");
+    let config = write_config(
+        directory.path(),
+        "nested.conf",
+        "web.page.title=Monitor\ndynamic.1.source=/proc/loadavg\ndynamic.1.name=load\ndynamic.1.postprocess=$1*2\n",
+    );
+    let actual = run_unit(
+        &directory,
+        "my $c = Configuration->new; $c->LoadFile($_) foreach @ARGV; { page => $c->{web}->{page}, dynamic => $c->{dynamic} }",
+        &[config.to_str().expect("UTF-8 config path")],
+    );
+    assert_eq!(
+        actual,
+        r#"{"dynamic":[{"name":"load","postprocess":"$1*2","source":"/proc/loadavg"}],"page":{"title":"Monitor"}}"#,
+    );
+}
