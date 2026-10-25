@@ -17,3 +17,7 @@ path = "tests/cli_addr.rs"
 [[test]]
 name = "cli_delay"
 path = "tests/cli_delay.rs"
+
+[[test]]
+name = "cli_noserver"
+path = "tests/cli_noserver.rs"
