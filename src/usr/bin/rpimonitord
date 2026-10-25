@@ -381,18 +381,6 @@ sub SendStatus
   return 1;
 }
 
-sub SendRedirect
-{
-  my $this = shift;
-  my $destination = shift;
-  $this->Debug(2,$destination);
-
-  $this->{'connection'}->send_redirect($destination, 302);
-  $this->{'connection'}->close();
-
-  return 1;
-}
-
 sub SendError
 {
   my $this=shift;
@@ -624,9 +612,6 @@ sub Debug
   $level <= $loglevel or return;
   print STDERR "[", strftime("%Y/%m/%d-%H:%M:%S", localtime), "] ", "  " x ($level), (caller 1)[3], " @_\n";
 }
-
-eval 'sub IPC_CREAT {0001000}' unless defined &IPC_CREAT;
-eval 'sub IPC_RMID {0}'        unless defined &IPC_RMID;
 
 sub Run
 {
