@@ -13,3 +13,7 @@ path = "tests/version.rs"
 [[test]]
 name = "cli_addr"
 path = "tests/cli_addr.rs"
+
+[[test]]
+name = "cli_delay"
+path = "tests/cli_delay.rs"
