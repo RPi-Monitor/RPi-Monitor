@@ -1,0 +1,11 @@
+[package]
+name = "rpimonitor-e2e"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Standalone test harness; no third-party dependencies.
+
+[[test]]
+name = "version"
+path = "tests/version.rs"
