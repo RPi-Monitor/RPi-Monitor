@@ -5,6 +5,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+const BINARY_RELATIVE_PATH: &str = "src/usr/bin/rpimonitord";
+
 /// Resolve the repository root from this standalone Cargo package.
 pub fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -12,6 +14,11 @@ pub fn repository_root() -> PathBuf {
         .and_then(Path::parent)
         .expect("resolve repository root")
         .to_path_buf()
+}
+
+/// Absolute path to the rpimonitord executable.
+pub fn binary_path() -> PathBuf {
+    repository_root().join(BINARY_RELATIVE_PATH)
 }
 
 /// A temporary directory removed when the value is dropped.
@@ -23,10 +30,7 @@ impl TempDir {
             .duration_since(UNIX_EPOCH)
             .expect("system clock is before UNIX epoch")
             .as_nanos();
-        let path = env::temp_dir().join(format!(
-            "{prefix}-{}-{nonce}",
-            std::process::id()
-        ));
+        let path = env::temp_dir().join(format!("{prefix}-{}-{nonce}", std::process::id()));
         fs::create_dir(&path).expect("create isolated working directory");
         Self(path)
     }
@@ -49,11 +53,11 @@ pub fn write_config(directory: &Path, name: &str, content: &str) -> PathBuf {
     path
 }
 
-/// Run the repository's daemon binary with isolated environment settings.
+/// Run rpimonitord with isolated environment settings.
 /// If PERL_COVERAGE=1, launch it through Devel::Cover as the Python harness does.
-pub fn run(binary_relative_path: &str, args: &[OsString], working_dir: &Path) -> Output {
+pub fn run(args: &[OsString], working_dir: &Path) -> Output {
     let root = repository_root();
-    let binary = root.join(binary_relative_path);
+    let binary = binary_path();
     assert!(
         binary.is_file(),
         "rpimonitord executable not found at {}",
