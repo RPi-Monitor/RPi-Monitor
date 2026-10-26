@@ -4,25 +4,25 @@ After a long pause I decided to restart working on **RPi-Monitor** with the assi
 
 **AI Assisted development** can be something very efficient and will allow me to deliver fast and reliables updates to the project.
 
-Actually, I'm using free token provided by Mistral-Vibe, Codex, Gemini and Cursor and I run quite quickly out of token. So the development don't go as fast as it could.
+Actually, I'm using free token provided by Mistral-Vibe, Codex, Gemini and Cursor and I run quite quickly out of tokens. So the development won't go as fast as it could.
 
 **You like this project?** **You can participate** by giving a tip on my [Ko-fi](https://ko-fi.com/rpi-monitor) as soon as enough money will be collected, I will subscribe to an AI plan giving me more token to use for the development of **RPi-Monitor**.
 
-**RPi-Monitor** remain free and I don't ask funding for the time I spend doing the development.
+**RPi-Monitor** will remain free and I will not ask for funding for the time I spend doing the development.
 
 ![](docs/images/RPi-Monitor_revival.jpeg)
 
-**What will come next ?**
+**What will come next?**
 
 - New installation process based on an install script - already published
-  - **Note**: *Unitary tests are not yet in place so feel free to open an issue if you find a strange behavior.*
+  - **Note**: *Unit tests are not yet in place so feel free to open an issue if you find a strange behavior.*
 - New documentation based on mdbook
 - New set of tests to validate **RPi-Monitor** bahavior and ensure quick release
 - Review of each remaining issue and PR
 
-**And after ?**
+**And after?**
 
-- Theses steps are the fundation of new features and a wider compatibility (Not only debian based distro but any Linux). My overall objective is to port this software to **Rust** ... but this will not occurs without AI assistance... 
+- Theses steps are the foundation of new features and a wider compatibility (Not only debian-based distro but any Linux). My overall objective is to port this software to **Rust** ... but this will not take place without AI assistance... 
 
 # Overview
 
@@ -30,7 +30,7 @@ Actually, I'm using free token provided by Mistral-Vibe, Codex, Gemini and Curso
 
 **RPi-Monitor** provides a lot of feature such as **Embedded Web server**, **Alert messaging**, **SNMP integration**...
 
-For details, refer to [keys features of RPi-Monitor](https://rpi-monitor.github.io/RPi-Monitor-docs/01_features.html) in documentation.
+For details, refer to [key features of RPi-Monitor](https://rpi-monitor.github.io/RPi-Monitor-docs/01_features.html) in documentation.
 
 # Screenshots
 
