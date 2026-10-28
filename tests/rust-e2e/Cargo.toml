@@ -46,3 +46,6 @@ path = "tests/rrd_creation.rs"
 name = "alert_config"
 path = "tests/alert_config.rs"
 
+[[test]]
+name = "interval_lcm"
+path = "tests/interval_lcm.rs"
