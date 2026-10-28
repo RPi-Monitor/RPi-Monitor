@@ -15,5 +15,9 @@ name = "configuration_defaults"
 path = "tests/configuration_defaults.rs"
 
 [[test]]
+name = "monitor_extraction"
+path = "tests/monitor_extraction.rs"
+
+[[test]]
 name = "cli_help"
 path = "tests/cli_help.rs"
