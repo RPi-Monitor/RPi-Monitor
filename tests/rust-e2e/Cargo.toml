@@ -7,5 +7,9 @@ publish = false
 # Standalone test harness; no third-party dependencies.
 
 [[test]]
+name = "cli_options"
+path = "tests/cli_options.rs"
+
+[[test]]
 name = "cli_help"
 path = "tests/cli_help.rs"
