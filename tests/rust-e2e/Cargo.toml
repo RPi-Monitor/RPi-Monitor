@@ -37,3 +37,8 @@ path = "tests/noserver_mode.rs"
 [[test]]
 name = "rrd_creation"
 path = "tests/rrd_creation.rs"
+
+[[test]]
+name = "alert_config"
+path = "tests/alert_config.rs"
+
