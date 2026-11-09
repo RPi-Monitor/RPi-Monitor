@@ -571,8 +571,11 @@ sub Run
   #print Data::Dumper->Dump([$this->{'paths'}]);
 
   # Create the server
+  # Timeout also applies to accepted connections: without it, one client
+  # that connects and sends nothing blocks the web server indefinitely.
   $this->{'server'} = new HTTP::Daemon     ( ReuseAddr => 1,
                                              Listen => SOMAXCONN,
+                                             Timeout => 10,
                                              LocalAddr => $configuration->{'daemon'}->{'addr'},
                                              LocalPort => $configuration->{'daemon'}->{'port'})
     or die "Web server not started because of error: $!\n";
