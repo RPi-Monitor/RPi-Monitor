@@ -25,3 +25,7 @@ path = "tests/monitor_extraction.rs"
 [[test]]
 name = "cli_help"
 path = "tests/cli_help.rs"
+
+[[test]]
+name = "noserver_mode"
+path = "tests/noserver_mode.rs"
