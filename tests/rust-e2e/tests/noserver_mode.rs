@@ -824,6 +824,10 @@ fn web_server_serves_existing_static_files_from_webroot() {
     fs::create_dir_all(datastore.join("stat")).expect("create RRD stat directory");
     let marker = b"rpimonitor-static-file-e2e";
     fs::write(webroot.join("favicon.ico"), marker).expect("write fixture file");
+    let addon = webroot.join("addons").join("sample");
+    fs::create_dir_all(&addon).expect("create addon directory");
+    let addon_marker = b"rpimonitor-addon-file-e2e";
+    fs::write(addon.join("widget.js"), addon_marker).expect("write addon fixture");
 
     let probe = TcpListener::bind(("127.0.0.1", 0)).expect("reserve an ephemeral port");
     let port = probe.local_addr().expect("read ephemeral port").port();
@@ -888,6 +892,19 @@ fn web_server_serves_existing_static_files_from_webroot() {
     assert!(
         favicon_response.windows(marker.len()).any(|window| window == marker),
         "HTTP response should contain the fixture file bytes; response={favicon_text:?}"
+    );
+
+    let addon_response = get("/addons/sample/widget.js");
+    let addon_text = String::from_utf8_lossy(&addon_response);
+    assert!(
+        addon_text.starts_with("HTTP/1.1 200") || addon_text.starts_with("HTTP/1.0 200"),
+        "addon asset should return HTTP 200; response={addon_text:?}"
+    );
+    assert!(
+        addon_response
+            .windows(addon_marker.len())
+            .any(|window| window == addon_marker),
+        "addon endpoint should return the addon file bytes; response={addon_text:?}"
     );
 
     let rrd_response = get("/stat/empty.rrd");
