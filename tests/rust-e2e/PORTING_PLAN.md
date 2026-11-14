@@ -52,7 +52,7 @@ Status meanings:
 | `test_shared_memory.py` | Shared memory through web endpoint, no-server mode, and error conditions | No Rust coverage | **Missing** — verify observable endpoints/files and error behavior without inspecting internal memory APIs |
 | `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | No Rust coverage | **Missing** — test the executable/symlink interface in an isolated environment |
 | `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | No Rust coverage | **Missing** — use an isolated SNMP client/agent fixture and assert protocol responses |
-| `test_static_file_serving.py` | Static assets and files served from the data store | `noserver_mode.rs` (`web_server_serves_existing_static_file_from_webroot`) verifies HTTP 200 and file body for a placed asset | **Ported** — HTTP static file serving behavior is covered |
+| `test_static_file_serving.py` | Static assets and files served from the data store | `noserver_mode.rs` verifies HTTP 200 and file content for both a webroot asset and `/stat/empty.rrd` | **Ported** — HTTP file serving from webroot and datastore is covered |
 | `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | Default `user`/`group` values are asserted, but actual resolution and permissions are not | **Partial** — test process-visible behavior using safe, available identities and temporary files |
 
 ## Existing Rust black-box suites
@@ -63,7 +63,7 @@ Status meanings:
 - `tests/rust-e2e/tests/configuration_loadfile.rs`: indexed keys and multiple configuration files.
 - `tests/rust-e2e/tests/configuration_cli.rs`: comments, includes, interval summary, nested values.
 - `tests/rust-e2e/tests/monitor_extraction.rs`: extraction-related configuration survives loading; **not runtime extraction coverage**.
-- `tests/rust-e2e/tests/noserver_mode.rs`: starts the real daemon in background no-server mode and checks command output extraction, arithmetic post-processing, static values, companion JSON files, read-only no-write, HTTP endpoints (static.json, dynamic.json, menu.json, 404, file serving), runtime timeout, multiple capture groups, flat-file last-match, data expansion, and configured dynamic-source intervals.
+- `tests/rust-e2e/tests/noserver_mode.rs`: starts the real daemon in background no-server mode and checks command output extraction, arithmetic post-processing, static values, companion JSON files, read-only no-write, HTTP endpoints (static.json, dynamic.json, menu.json, 404, webroot/datastore file serving), runtime timeout, multiple capture groups, flat-file last-match, data expansion, and configured dynamic-source intervals.
 - `tests/rust-e2e/tests/daemonize.rs`: PID file creation and content, daemon terminal detachment, graceful SIGTERM/SIGINT, show-mode no-pidfile, SIGUSR1/SIGUSR2 log-level adjustment.
 - `tests/rust-e2e/tests/rrd_creation.rs`: stat directory creation, empty.rrd schema validation, all five dynamic RRA configurations (CF, rows, XFF), and GAUGE/COUNTER/DERIVE dynamic RRD creation via `rrdtool info`.
 - `tests/rust-e2e/tests/rrd_min_max.rs`: configured and unbounded DS min/max values, including values outside configured bounds.
