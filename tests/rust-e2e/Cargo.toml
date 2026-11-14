@@ -47,6 +47,10 @@ name = "alert_config"
 path = "tests/alert_config.rs"
 
 [[test]]
+name = "interactive_mode"
+path = "tests/interactive_mode.rs"
+
+[[test]]
 name = "interval_lcm"
 path = "tests/interval_lcm.rs"
 
