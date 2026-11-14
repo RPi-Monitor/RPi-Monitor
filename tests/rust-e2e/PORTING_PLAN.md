@@ -51,7 +51,7 @@ Status meanings:
 | `test_server_readonly_status.py` | Read-only status through server JSON | CLI read-only flag is covered, but server response is not | **Partial** — assert the endpoint response in read-only mode |
 | `test_shared_memory.py` | Shared memory through web endpoint, no-server mode, and error conditions | No Rust coverage | **Missing** — verify observable endpoints/files and error behavior without inspecting internal memory APIs |
 | `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | `snmp_daemon.rs` launches the symlink entry point and verifies the pass_persist PING response | **Ported** |
-| `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | `cli_options.rs` verifies MIB generation; `snmp_daemon.rs` exercises pass_persist GET for the hostname OID | **Partial** — add an SNMP client/agent fixture to verify network GET and dynamic metric values |
+| `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | `cli_options.rs` verifies MIB generation; `snmp_daemon.rs` exercises pass_persist GET for the hostname and a post-processed dynamic metric | **Partial** — add an SNMP client/agent fixture to verify network GET |
 | `test_static_file_serving.py` | Static assets and files served from the data store | `noserver_mode.rs` verifies HTTP 200 and file content for webroot image/addon assets, configured and existing datastore RRDs, and the empty-RRD fallback for a missing RRD | **Ported** — HTTP file serving and missing-RRD fallback are covered |
 | `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | Default `user`/`group` values are asserted, but actual resolution and permissions are not | **Partial** — test process-visible behavior using safe, available identities and temporary files |
 
@@ -69,7 +69,7 @@ Status meanings:
 - `tests/rust-e2e/tests/rrd_min_max.rs`: configured and unbounded DS min/max values, including values outside configured bounds.
 - `tests/rust-e2e/tests/configuration_loadfile.rs`: configuration parsing and serialization, including the default menu labels used when status/statistics titles are missing.
 - `tests/rust-e2e/tests/alert_config.rs`: alert key/value config loading via `-s` dump, raise/cancel command file side effects, trigger-clear cancellation, compound `&&` trigger condition, interpolation of configured and dynamic data in alert commands, and daemon recovery after an alert command timeout.
-- `tests/rust-e2e/tests/snmp_daemon.rs`: starts the real daemon to populate shared status, launches the `rpimonitord-snmp` symlink entry point, then verifies pass_persist PING and hostname GET responses.
+- `tests/rust-e2e/tests/snmp_daemon.rs`: starts the real daemon to populate shared status, launches the `rpimonitord-snmp` symlink entry point, then verifies pass_persist PING, hostname GET, and dynamic metric GET after configured post-processing.
 - `tests/rust-e2e/tests/interactive_mode.rs`: scripts flat-file and executable-source prompts, executable rejection and re-prompt, invalid-regex recovery, extraction and post-processing validation, and confirms the observable default-config error.
 - `tests/rust-e2e/tests/interval_lcm.rs`: maxinterval = LCM of all dynamic intervals (three-interval case distinguishing LCM from GCD, single-interval boundary, coprime-prime pairs).
 - `tests/suite/*.bats`: existing install/update/security shell scenarios are separate from the Python behavior-test inventory and must be reviewed independently before claiming full repository test coverage.
