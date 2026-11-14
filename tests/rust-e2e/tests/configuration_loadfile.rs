@@ -92,6 +92,32 @@ fn indexed_configuration_entries_are_kept_in_order() {
 }
 
 #[test]
+fn menu_uses_default_labels_when_status_and_statistics_titles_are_missing() {
+    let directory = TempDir::new("rpimonitor-loadfile-menu-defaults");
+    let config = write_config(
+        directory.path(),
+        "menu-defaults.conf",
+        "web.status.1.content=Status details\nweb.statistics.1.content=Statistics details\n",
+    );
+
+    let output = show_configuration(
+        &directory,
+        &[config.to_str().expect("UTF-8 config path")],
+    );
+
+    let menu_start = output.find("'menu' => {").expect("menu should be generated");
+    let menu = &output[menu_start..];
+    assert!(
+        menu.contains("'Status'"),
+        "status entry without a title should use the default menu label: {output}"
+    );
+    assert!(
+        menu.contains("'Statistics'"),
+        "statistics entry without a title should use the default menu label: {output}"
+    );
+}
+
+#[test]
 fn dynamic_rrd_declarations_are_preserved_in_loaded_configuration() {
     let directory = TempDir::new("rpimonitor-loadfile-rrd");
     let config = write_config(
