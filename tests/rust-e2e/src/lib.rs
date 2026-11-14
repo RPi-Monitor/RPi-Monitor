@@ -55,6 +55,7 @@ pub fn write_config(directory: &Path, name: &str, content: &str) -> PathBuf {
 
 /// Run rpimonitord with isolated environment settings.
 /// If PERL_COVERAGE=1, launch it through Devel::Cover as the Python harness does.
+/// PERL_COVERAGE_DB overrides the coverage database path.
 pub fn run(args: &[OsString], working_dir: &Path) -> Output {
     let root = repository_root();
     let binary = binary_path();
@@ -65,7 +66,9 @@ pub fn run(args: &[OsString], working_dir: &Path) -> Output {
     );
 
     let mut command = if env::var("PERL_COVERAGE").as_deref() == Ok("1") {
-        let coverage_db = root.join("tests/cover_db");
+        let coverage_db = env::var_os("PERL_COVERAGE_DB")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| root.join("tests/cover_db"));
         let coverage_options = format!(
             "-MDevel::Cover=-db,{},-silent,1,+ignore,perl_unit\\.pl",
             coverage_db.display()
