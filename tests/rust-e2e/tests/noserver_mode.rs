@@ -813,7 +813,7 @@ fn readonly_web_server_rejects_unknown_http_path() {
 
 
 #[test]
-fn web_server_serves_existing_static_file_from_webroot() {
+fn web_server_serves_existing_static_files_from_webroot() {
     use std::io::{Read, Write};
     use std::net::{TcpListener, TcpStream};
 
@@ -833,7 +833,7 @@ fn web_server_serves_existing_static_file_from_webroot() {
         directory.path(),
         "http-file.conf",
         &format!(
-            "daemon.addr=127.0.0.1\ndaemon.port={port}\ndaemon.noserver=0\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.timeout=5\ndaemon.datastore={}\ndaemon.webroot={}\n",
+            "daemon.addr=127.0.0.1\ndaemon.port={port}\ndaemon.noserver=0\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.timeout=5\ndaemon.datastore={}\ndaemon.webroot={}\nweb.status.1.title=System Status\nweb.statistics.1.title=Trend Statistics\n",
             datastore.display(),
             webroot.display()
         ),
@@ -857,36 +857,48 @@ fn web_server_serves_existing_static_file_from_webroot() {
         String::from_utf8_lossy(&output.stderr)
     );
 
-    let response = {
+    let get = |path: &str| {
         let deadline = Instant::now() + Duration::from_secs(8);
         loop {
             match TcpStream::connect(("127.0.0.1", port)) {
                 Ok(mut stream) => {
                     stream.set_read_timeout(Some(Duration::from_secs(2)))
                         .expect("set HTTP read timeout");
-                    write!(stream, "GET /favicon.ico HTTP/1.0\r\nHost: 127.0.0.1\r\n\r\n")
+                    write!(stream, "GET {path} HTTP/1.0\r\nHost: 127.0.0.1\r\n\r\n")
                         .expect("write HTTP request");
                     let mut response = Vec::new();
                     stream.read_to_end(&mut response).expect("read HTTP response");
-                    break response;
+                    return response;
                 }
                 Err(error) if Instant::now() < deadline => {
                     let _ = error;
                     thread::sleep(Duration::from_millis(100));
                 }
-                Err(error) => panic!("HTTP server did not start accepting requests: {error}"),
+                Err(error) => panic!("HTTP server did not accept {path}: {error}"),
             }
         }
     };
 
-    let response_text = String::from_utf8_lossy(&response);
+    let favicon_response = get("/favicon.ico");
+    let favicon_text = String::from_utf8_lossy(&favicon_response);
     assert!(
-        response_text.starts_with("HTTP/1.1 200") || response_text.starts_with("HTTP/1.0 200"),
-        "existing favicon should return HTTP 200; response={response_text:?}"
+        favicon_text.starts_with("HTTP/1.1 200") || favicon_text.starts_with("HTTP/1.0 200"),
+        "existing favicon should return HTTP 200; response={favicon_text:?}"
     );
     assert!(
-        response.windows(marker.len()).any(|window| window == marker),
-        "HTTP response should contain the fixture file bytes; response={response_text:?}"
+        favicon_response.windows(marker.len()).any(|window| window == marker),
+        "HTTP response should contain the fixture file bytes; response={favicon_text:?}"
+    );
+
+    let menu_response = get("/menu.json");
+    let menu_text = String::from_utf8_lossy(&menu_response);
+    assert!(
+        menu_text.starts_with("HTTP/1.1 200") || menu_text.starts_with("HTTP/1.0 200"),
+        "menu.json should return HTTP 200; response={menu_text:?}"
+    );
+    assert!(
+        menu_text.contains("System Status") && menu_text.contains("Trend Statistics"),
+        "menu endpoint should expose the configured navigation entries; response={menu_text:?}"
     );
 
     assert!(
