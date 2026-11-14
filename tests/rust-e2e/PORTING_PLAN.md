@@ -50,8 +50,8 @@ Status meanings:
 | `test_rrd_rra_configuration.py` | RRD archive/RRA configuration | `rrd_creation.rs` checks all five archives' consolidation function, rows, and XFF through `rrdtool info` | **Ported** — all legacy RRA metadata assertions are covered |
 | `test_server_readonly_status.py` | Read-only status through server JSON | CLI read-only flag is covered, but server response is not | **Partial** — assert the endpoint response in read-only mode |
 | `test_shared_memory.py` | Shared memory through web endpoint, no-server mode, and error conditions | No Rust coverage | **Missing** — verify observable endpoints/files and error behavior without inspecting internal memory APIs |
-| `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | No Rust coverage | **Missing** — test the executable/symlink interface in an isolated environment |
-| `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | No Rust coverage | **Missing** — use an isolated SNMP client/agent fixture and assert protocol responses |
+| `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | `snmp_daemon.rs` launches the symlink entry point and verifies the pass_persist PING response | **Ported** |
+| `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | `cli_options.rs` verifies MIB generation; `snmp_daemon.rs` exercises pass_persist GET for the hostname OID | **Partial** — add an SNMP client/agent fixture to verify network GET and dynamic metric values |
 | `test_static_file_serving.py` | Static assets and files served from the data store | `noserver_mode.rs` verifies HTTP 200 and file content for a webroot asset, an existing datastore RRD, and the empty-RRD fallback for a missing RRD | **Ported** — HTTP file serving and missing-RRD fallback are covered |
 | `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | Default `user`/`group` values are asserted, but actual resolution and permissions are not | **Partial** — test process-visible behavior using safe, available identities and temporary files |
 
@@ -68,6 +68,7 @@ Status meanings:
 - `tests/rust-e2e/tests/rrd_creation.rs`: stat directory creation, empty.rrd schema validation, all five dynamic RRA configurations (CF, rows, XFF), and GAUGE/COUNTER/DERIVE dynamic RRD creation via `rrdtool info`.
 - `tests/rust-e2e/tests/rrd_min_max.rs`: configured and unbounded DS min/max values, including values outside configured bounds.
 - `tests/rust-e2e/tests/alert_config.rs`: alert key/value config loading via `-s` dump, raise/cancel command file side effects, trigger-clear cancellation, and compound `&&` trigger condition.
+- `tests/rust-e2e/tests/snmp_daemon.rs`: starts the real daemon to populate shared status, launches the `rpimonitord-snmp` symlink entry point, then verifies pass_persist PING and hostname GET responses.
 - `tests/rust-e2e/tests/interval_lcm.rs`: maxinterval = LCM of all dynamic intervals (three-interval case distinguishing LCM from GCD, single-interval boundary, coprime-prime pairs).
 - `tests/suite/*.bats`: existing install/update/security shell scenarios are separate from the Python behavior-test inventory and must be reviewed independently before claiming full repository test coverage.
 
