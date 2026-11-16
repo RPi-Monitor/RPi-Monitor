@@ -94,10 +94,10 @@ starting from 0 up to 100.
 `graph_options` can have other usefull option. They are described in the 
 documentation of [javascriptrrd](http://javascriptrrd.sourceforge.net/docs/javascriptrrd_v0.6.3/doc/lib/rrdFlot_js.html).
 
-After restarting RPi-Monotor with the command:
+Restart **RPi-Monitor** to apply the configuration:
 
 ```text
-service rpimonitor restart
+sudo systemctl restart rpimonitord
 ```
 
 You will see a new curve in Temperature graph as shown in the screenshot bellow:
@@ -158,7 +158,7 @@ room_temp=/sys/bus/w1/devices/28-000004fe1847/w1_slave=t.(\d+)$
 ```
 
 Restart RPi-Monitor with the following command and it is done:
-: sudo  service rpimonitor restart
+: sudo systemctl restart rpimonitord
 
 A new graph is available in statistics (wait a little bit to have data and drawing):
 
