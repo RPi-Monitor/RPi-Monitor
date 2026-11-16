@@ -1,37 +1,40 @@
-:github_url: https://github.com/XavierBerger/RPi-Monitor/blob/develop/docs/source/42_license.rst
+# Authors and Licenses
 
-Authors and Licenses
-====================
-
-Authors
--------
+## Authors
 
 Maintener: 
-  XavierBerger
+: XavierBerger
 
 Contributors:
-  https://github.com/XavierBerger/RPi-Monitor/graphs/contributors
+: <https://github.com/XavierBerger/RPi-Monitor/graphs/contributors>
 
 ---------
 
-Licenses
---------
+## Licenses
 
-.. figure:: _static/license001.png
-   :align: center
+<figure>
+<img src="_static/license001.png">
+<figcaption>
 
-   Documentation license: `Creative Commons Attribution-ShareAlike 4.0 
-   International License <http://creativecommons.org/licenses/by-sa/4.0/>`_
+Documentation license: [Creative Commons Attribution-ShareAlike 4.0
+International License](http://creativecommons.org/licenses/by-sa/4.0/)
 
-.. figure:: _static/license002.png
-   :align: center
+</figcaption>
+</figure>
 
-   **RPi-Monitor** software is published under **GNU General Public License v3**
+<figure>
+<img src="_static/license002.png">
+<figcaption>
 
-^^^^^^^^
+**RPi-Monitor** software is published under **GNU General Public License v3**
 
-GNU GENERAL PUBLIC LICENSE
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+</figcaption>
+</figure>
 
-.. include:: ../../LICENSE
-  :literal:
+---------
+
+### GNU GENERAL PUBLIC LICENSE
+
+```text
+{{#include ../../LICENSE}}
+```

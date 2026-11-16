@@ -1,92 +1,77 @@
-:github_url: https://github.com/XavierBerger/RPi-Monitor/blob/develop/docs/source/41_contributing.rst
-
-Contributing
-=============
+# Contributing
 
 If you want to contribute to **RPi-Monitor** and propose a pull request, first 
-create a fork from `github <https://github.com/XavierBerger/RPi-Monitor>`_
+create a fork from [github](https://github.com/XavierBerger/RPi-Monitor)
 
-Contribute to documentation
----------------------------
-**RPi-Monitor** documentation is written in reStructured Text using 
-`sphinx <http://www.sphinx-doc.org/en/master/>`_ document generator and
-`Read the docs theme <https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html>`_ 
-(included in project as `git submodule`)
+## Contribute to documentation
+**RPi-Monitor** documentation is written in Markdown using
+[mdBook](https://rust-lang.github.io/mdBook/) (version 0.5).
 
-Prepare development environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Clone your fork and update theme with the following commands:
+### Prepare development environment
+Clone your fork and install mdBook with the following commands:
 
-::
+```text
+git clone git@github.com:${GITHUB_ACCOUNT}/RPi-Monitor.git
+cd RPi-Monitor
+cargo install mdbook --version 0.5.4 --locked
+```
 
-  git clone git@github.com:${GITHUB_ACCOUNT}/RPi-Monitor.git
-  cd RPi-Monitor
-  git submodule update --init --recursive
-  pip install sphinx sphinx-autobuild
-
-Generate documentation
-^^^^^^^^^^^^^^^^^^^^^^
+### Generate documentation
 The following command update the documentation and start firefox on generated documentation:
 
-::
+```text
+cd docs
+make clean && make html && firefox build/html/index.html
+```
 
-    cd docs
-    make clean && make html && firefox build/html/index.html
-
-Propose a merge request
-^^^^^^^^^^^^^^^^^^^^^^^
+### Propose a merge request
 Once your modifications are done, you can propose a pull request on github.
 
-.. important:: Propose pull requests on **develop** branch only.
+> [!IMPORTANT]
+> Propose pull requests on **develop** branch only.
 
 
-Contribute to software
-----------------------
+## Contribute to software
 
-Report issue
-^^^^^^^^^^^^
+### Report issue
 Whether you've found an issue with **RPi-Monitor**, here's how to report the problem...
 
 First, check the documentation for solutions to common problems.
 
-To file a bug
-"""""""""""""
-    * Go to `issue tracker on GitHub <https://github.com/XavierBerger/RPi-Monitor/issues>`_
-    * Search for existing issues using the search field at the top of the page
-    * File a new issue with all details explaining how to reproduce the bug
+#### To file a bug
+* Go to [issue tracker on GitHub](https://github.com/XavierBerger/RPi-Monitor/issues)
+* Search for existing issues using the search field at the top of the page
+* File a new issue with all details explaining how to reproduce the bug
 
-Requesting a feature
-""""""""""""""""""""
-Feel free to file new feature requests as an `issue on GitHub <https://github.com/XavierBerger/RPi-Monitor/issues>`_, just like a bug.
+#### Requesting a feature
+Feel free to file new feature requests as an [issue on GitHub](https://github.com/XavierBerger/RPi-Monitor/issues), just like a bug.
 
-Propose a merge request
-^^^^^^^^^^^^^^^^^^^^^^^
+### Propose a merge request
 
 GitHub is used to perform versioning of development and also to store the
 development progress of future releases.
 
 The branch master contains the latest stable version.
 
-The branch ``develop`` is the unstable development branch (The branch may have bugs 
+The branch `develop` is the unstable development branch (The branch may have bugs 
 and partially released code that could avoid RPi-Monitor to run as expected).
 
 Each release is identified by a tag.
 
 You want to contribute to **RPi-Monitor**. I'll be happy to integrate your pull request.
 
-Please note: Pull request perfomed on ``develop`` branch will be integrated as soon 
+Please note: Pull request perfomed on `develop` branch will be integrated as soon 
 as possible. Pull request perform on master branche may only be integrated 
 when a new version is published (or not may not be integrated at all...)
 
-.. important:: Propose pull requests on **develop** branch only.
+> [!IMPORTANT]
+> Propose pull requests on **develop** branch only.
 
-Packaging
----------
+## Packaging
 
 The following chapter describes how **RPi-Monitor** is packaged and installed.
 
-Dependencies
-^^^^^^^^^^^^
+### Dependencies
 **rpimonitord** is a perl script which require the following perl modules to work:
 
  * perl
@@ -98,54 +83,51 @@ Dependencies
  * libsnmp-extension-passpersist-perl
  * aptitude (required by script checking upgradable packages)
 
-Programs
-^^^^^^^^
+### Programs
 
-* ``/usr/bin/rpimonitord`` : *Daemon extracting data from the system and embedding the web application server - The help page is used to generate manpage*
-* ``/etc/cron.d/rpimonitor`` : *daily extraction the status of package update updating the file* ``updatestatus.txt``
-* ``/etc/init.d/rpimonitor`` : *sysVinit startup script*
+* `/usr/bin/rpimonitord` : *Daemon extracting data from the system and embedding the web application server - The help page is used to generate manpage*
+* `/etc/cron.d/rpimonitor` : *daily extraction the status of package update updating the file* `updatestatus.txt`
+* `/etc/init.d/rpimonitor` : *sysVinit startup script*
 
-.. note:: **upstart** and **systemd** script are also avialable in the repository
+> [!NOTE]
+> **upstart** and **systemd** script are also avialable in the repository
 
-Configuration
-^^^^^^^^^^^^^
+### Configuration
 
-* ``/etc/rpimonitor/daemon.conf`` : *configuration of rpimonitord daemon*
-* ``/etc/rpimonitor/data.conf`` : *symlink to* ``template/<distribution>.conf`` *configuration of default data to be extracted and presented*
-* ``/etc/rpimonitor/*.conf`` : *all other* ``*.conf`` *file will be parsed to look for data to be monitored*
-* ``/etc/rpimonitor/template/*.conf`` : *data configuration template customized for different distribution and additionnal examples*
+* `/etc/rpimonitor/daemon.conf` : *configuration of rpimonitord daemon*
+* `/etc/rpimonitor/data.conf` : *symlink to* `template/<distribution>.conf` *configuration of default data to be extracted and presented*
+* `/etc/rpimonitor/*.conf` : *all other* `*.conf` *file will be parsed to look for data to be monitored*
+* `/etc/rpimonitor/template/*.conf` : *data configuration template customized for different distribution and additionnal examples*
 
 Some configuration files are provided for different distribution (raspbian, xbian, ...).
-These files are stored into the subdirectory ``/etc/rpimonitor/templates/``.
-For supported distribution, the post installation script of package creates a link, ``data.conf``, pointing to the configuration files dedicated to the distribution.
+These files are stored into the subdirectory `/etc/rpimonitor/templates/`.
+For supported distribution, the post installation script of package creates a link, `data.conf`, pointing to the configuration files dedicated to the distribution.
 
-.. note:: The template directory is also containing some templates that can be used as example to customize configuration.
+> [!NOTE]
+> The template directory is also containing some templates that can be used as example to customize configuration.
 
-Manpages
-^^^^^^^^
+### Manpages
 
-* ``/usr/share/man/man5/rpimonitord.conf.5.gz`` : *Manpage for rpimonitor and data extraction configuration*
-* ``/usr/share/man/man1/rpimonitord.1.gz`` : *Manpage for rpimonitord command line usage*
+* `/usr/share/man/man5/rpimonitord.conf.5.gz` : *Manpage for rpimonitor and data extraction configuration*
+* `/usr/share/man/man1/rpimonitord.1.gz` : *Manpage for rpimonitord command line usage*
 
-Web Interface
-^^^^^^^^^^^^^
+### Web Interface
 
-* ``/usr/share/rpimonitor/web`` : *Directory containing html*
-* ``/usr/share/rpimonitor/web/js`` : *Directory containing javascripts*
-* ``/usr/share/rpimonitor/web/css`` : *Directory containing style*
-* ``/usr/share/rpimonitor/web/img`` : *Directory containing images*
-* ``/usr/share/rpimonitor/web/fonts`` : *Directory containing fonts*
-* ``/usr/share/rpimonitor/web/addons`` : *Directory containing addons*
+* `/usr/share/rpimonitor/web` : *Directory containing html*
+* `/usr/share/rpimonitor/web/js` : *Directory containing javascripts*
+* `/usr/share/rpimonitor/web/css` : *Directory containing style*
+* `/usr/share/rpimonitor/web/img` : *Directory containing images*
+* `/usr/share/rpimonitor/web/fonts` : *Directory containing fonts*
+* `/usr/share/rpimonitor/web/addons` : *Directory containing addons*
 
-.. note:: When **RPi-Monitor** is configured to not use the internal server, the json are written on the disk into the web root directory ``/usr/share/rpimonitor/web``
+> [!NOTE]
+> When **RPi-Monitor** is configured to not use the internal server, the json are written on the disk into the web root directory `/usr/share/rpimonitor/web`
 
-Scripts
-^^^^^^^
+### Scripts
 
-* ``/usr/share/rpimonitor/scripts/updatePackagesStatus.pl`` : *Script periodically executed to update* ``/var/lib/rpimonitor/updatestatus.txt``
+* `/usr/share/rpimonitor/scripts/updatePackagesStatus.pl` : *Script periodically executed to update* `/var/lib/rpimonitor/updatestatus.txt`
 
-Data
-^^^^
+### Data
 
-* ``/var/lib/rpimonitor/web/stat`` : *Directory containing* ``*.rrd``
-* ``/var/lib/rpimonitor/updatestatus.txt`` : *Current status of packages update*
+* `/var/lib/rpimonitor/web/stat` : *Directory containing* `*.rrd`
+* `/var/lib/rpimonitor/updatestatus.txt` : *Current status of packages update*
