@@ -8,6 +8,13 @@
     pointer-events: none;   /* menu icons under the ribbon stay clickable */
 }
 
+/* Below mdBook's own 620px breakpoint the full ribbon hides the page title. */
+@media only screen and (max-width: 620px) {
+    .wip-ribbon {
+        height: 150px;
+    }
+}
+
 figure {
     text-align: center;
 }
