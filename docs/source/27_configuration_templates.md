@@ -14,7 +14,7 @@ configuration file using the `include`.
 > Remember to restart **RPi-Monitor** to apply the configuration change:
 >
 > ```text
-> sudo /etc/init.d/rpimonitor restart
+> sudo systemctl restart rpimonitord
 > ```
 
 ## Page header
