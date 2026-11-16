@@ -3,7 +3,17 @@
     <!-- Filter for high legibility outline (multi-theme support for text) -->
     <filter id="theme-outline" x="-10%" y="-10%" width="120%" height="120%">
       <feFlood flood-color="#ffffff" flood-opacity="0.9" result="bg"/>
-      <feMorphology operator="dilate" radius="3" in="SourceAlpha" result="outline"/>
+      <feMorphology operator="dilate" radius="1.5" in="SourceAlpha" result="outline"/>
+      <feComposite in="bg" in2="outline" operator="in" result="coloredOutline"/>
+      <feMerge>
+        <feMergeNode in="coloredOutline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Thinner outline for the small subtitle -->
+    <filter id="subtitle-outline" x="-10%" y="-10%" width="120%" height="120%">
+      <feFlood flood-color="#ffffff" flood-opacity="0.9" result="bg"/>
+      <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="outline"/>
       <feComposite in="bg" in2="outline" operator="in" result="coloredOutline"/>
       <feMerge>
         <feMergeNode in="coloredOutline"/>
@@ -86,6 +96,7 @@
           font-size="24" 
           font-weight="500" 
           fill="#334155" 
-          letter-spacing="0.5">Real time monitoring for embedded devices</text>
+          letter-spacing="1.5" 
+          filter="url(#subtitle-outline)">Real time monitoring for embedded devices</text>
   </g>
 </svg>

@@ -91,7 +91,7 @@ Statistics showing disk usage
 -----
 
 <figure>
-<img src="_static/logo.png" width="500">
+<img src="_static/logo.svg" width="500">
 <figcaption>
 
 Official Logo

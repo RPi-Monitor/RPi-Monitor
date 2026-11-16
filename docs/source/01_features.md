@@ -5,7 +5,7 @@ is explaining the name of this software. In reality **RPi-Monitor** can run
 on every computers running `perl`.
 
 <figure>
-<img src="_static/logo.png">
+<img src="_static/logo.svg" width="500">
 </figure>
 
 Since the beginning **RPi-Monitor** as been designed for embedded devices and

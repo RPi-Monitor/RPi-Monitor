@@ -14,15 +14,18 @@ do
     if [ "" != "${DESCRIPTION}" ]
     then
         WIDTH=$(exiftool ${IMAGE} | perl -ne '/Doc Width\s+:\s+(.*)/ and print $1' )
+        # A vector version, when present, is shown instead; the PNG keeps the metadata.
+        SOURCE=${IMAGE%.png}.svg
+        [ -f "${SOURCE}" ] || SOURCE=${IMAGE}
         echo >> ${TARGET}
         echo "-----" >> ${TARGET}
         echo >> ${TARGET}
         echo "<figure>" >> ${TARGET}
         if [ "" !=  "${WIDTH}" ]
         then
-            echo "<img src=\"${IMAGE}\" width=\"${WIDTH%px}\">" >> ${TARGET}
+            echo "<img src=\"${SOURCE}\" width=\"${WIDTH%px}\">" >> ${TARGET}
         else
-            echo "<img src=\"${IMAGE}\">" >> ${TARGET}
+            echo "<img src=\"${SOURCE}\">" >> ${TARGET}
         fi
         # Blank lines around the description let Markdown render inside the caption.
         echo "<figcaption>" >> ${TARGET}
