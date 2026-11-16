@@ -9,6 +9,10 @@ daemon.sharedmemkey=20130906
 daemon.delay=10
 : Define the delay in seconds between 2 KPIs extraction (Default: 10)
 
+daemon.defaultinterval=1
+: Default extraction interval for dynamic KPIs that do not specify their own
+  `interval` value. The value is a multiplier of `daemon.delay`.
+
 > [!IMPORTANT]
 > If you want to change the default delay, the rrd files in `/var/lib/rpimonitor/stat`
 > have to be deleted. `rpimonitord` will recreate these files at next startup.
@@ -28,21 +32,6 @@ daemon.addr=0.0.0.0
 
 daemon.port=8888
 : Define port of the embedded web server (Default: 8888)
-
-daemon.user=pi
-: Define user used to run embedded web server process (Default: pi)
-
-  > [!NOTE]
-  > If user is not existing, process will run with `uid=1000`
-
-daemon.group=pi
-: Define group used to run embedded web server process (Default: pi)
-
-  > [!NOTE]
-  > If group is not existing, process will run with `gid=1000`
-
-  > [!IMPORTANT]
-  > Extraction daemon of **RPi-Monitor** running as root.
 
 daemon.webroot=/usr/share/rpimonitor/web
 : Define the root directory of the web server (Default: `/usr/share/rpimonitor/web`)
