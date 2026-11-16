@@ -5,7 +5,7 @@ create a fork from [github](https://github.com/RPi-Monitor/RPi-Monitor)
 
 ## Contribute to documentation
 **RPi-Monitor** documentation is written in Markdown using
-[mdBook](https://rust-lang.github.io/mdBook/) (version 0.5).
+[mdBook](https://rust-lang.github.io/mdBook/).
 
 ### Prepare development environment
 Clone your fork and install mdBook with the following commands:
@@ -13,16 +13,20 @@ Clone your fork and install mdBook with the following commands:
 ```text
 git clone git@github.com:${GITHUB_ACCOUNT}/RPi-Monitor.git
 cd RPi-Monitor
-cargo install mdbook --version 0.5.4 --locked
+cargo install mdbook --locked
 ```
 
 ### Generate documentation
-The following command update the documentation and start firefox on generated documentation:
+Build the HTML book from the repository root with:
 
 ```text
-cd docs
-make clean && make html && firefox build/html/index.html
+make -C docs html
 ```
+
+The result is in `docs/build/html/`. To preview changes while editing, run
+`mdbook serve docs` from the repository root.
+
+Man pages can be generated with `make -C docs man` (requires Pandoc).
 
 ### Propose a merge request
 Once your modifications are done, you can propose a pull request on github.
@@ -51,18 +55,14 @@ Feel free to file new feature requests as an [issue on GitHub](https://github.co
 GitHub is used to perform versioning of development and also to store the
 development progress of future releases.
 
-The branch master contains the latest stable version.
-
-The branch `develop` is the unstable development branch (The branch may have bugs 
-and partially released code that could avoid RPi-Monitor to run as expected).
+The `main` branch contains the current release line. The `develop` branch is
+used for integration work and may contain changes that are not yet released.
 
 Each release is identified by a tag.
 
 You want to contribute to **RPi-Monitor**. I'll be happy to integrate your pull request.
 
-Please note: Pull request perfomed on `develop` branch will be integrated as soon 
-as possible. Pull request perform on master branche may only be integrated 
-when a new version is published (or not may not be integrated at all...)
+Please target pull requests at `develop`, as requested by the project README.
 
 > [!IMPORTANT]
 > Propose pull requests on **develop** branch only.
@@ -72,46 +72,47 @@ when a new version is published (or not may not be integrated at all...)
 The following chapter describes how **RPi-Monitor** is packaged and installed.
 
 ### Dependencies
-**rpimonitord** is a perl script which require the following perl modules to work:
+The release is distributed as a root-based ZIP archive and installed by
+`install.sh`. On a fresh supported Debian-based system, the installer provides
+the runtime dependencies:
 
  * perl
  * librrds-perl
- * libhttp-daemon-perl (>= 6.0.0) | libwww-perl (<< 6.0.0)
+ * libhttp-daemon-perl
  * libjson-perl
  * libipc-sharelite-perl
  * libfile-which-perl
  * libsnmp-extension-passpersist-perl
- * aptitude (required by script checking upgradable packages)
+ * aptitude (installed by the installer; package-status detection also supports `apt` or `checkupdates`)
 
 ### Programs
 
 * `/usr/bin/rpimonitord` : *Daemon extracting data from the system and embedding the web application server - The help page is used to generate manpage*
-* `/etc/cron.d/rpimonitor` : *daily extraction the status of package update updating the file* `updatestatus.txt`
-* `/etc/init.d/rpimonitor` : *sysVinit startup script*
-
-> [!NOTE]
-> **upstart** and **systemd** script are also avialable in the repository
+* `/etc/cron.d/rpimonitor` : *daily refresh of upgradable-package status*
+* `/usr/lib/systemd/system/rpimonitord.service` : *systemd service unit*
+* `/usr/lib/systemd/system/rpimonitord-upgradable.{service,timer}` : *systemd timer and service for package status refresh*
 
 ### Configuration
 
 * `/etc/rpimonitor/daemon.conf` : *configuration of rpimonitord daemon*
-* `/etc/rpimonitor/data.conf` : *symlink to* `template/<distribution>.conf` *configuration of default data to be extracted and presented*
+* `/etc/rpimonitor/data.conf` : *symlink to* `template/raspbian.conf` *configuration of default data to be extracted and presented*
 * `/etc/rpimonitor/*.conf` : *all other* `*.conf` *file will be parsed to look for data to be monitored*
 * `/etc/rpimonitor/template/*.conf` : *data configuration template customized for different distribution and additionnal examples*
 
-Some configuration files are provided for different distribution (raspbian, xbian, ...).
-These files are stored into the subdirectory `/etc/rpimonitor/templates/`.
-For supported distribution, the post installation script of package creates a link, `data.conf`, pointing to the configuration files dedicated to the distribution.
+Additional platform and example configurations are provided in
+`/etc/rpimonitor/template/`. The installer preserves existing configuration;
+when an updated template differs, it saves the new copy with a `.new` suffix
+instead of overwriting local changes.
 
 > [!NOTE]
 > The template directory is also containing some templates that can be used as example to customize configuration.
 
 ### Manpages
 
-* `/usr/share/man/man1/rpimonitor.1.gz` : *Manpage for rpimonitord command line usage*
-* `/usr/share/man/man5/rpimonitor-daemon.conf.5.gz` : *Manpage for daemon configuration*
-* `/usr/share/man/man5/rpimonitor-data.conf.5.gz` : *Manpage for data extraction configuration*
-* `/usr/share/man/man5/rpimonitor-alert.conf.5.gz` : *Manpage for alert configuration*
+* `/usr/share/man/man1/rpimonitor.1` : *Manpage for rpimonitord command line usage*
+* `/usr/share/man/man5/rpimonitor-daemon.conf.5` : *Manpage for daemon configuration*
+* `/usr/share/man/man5/rpimonitor-data.conf.5` : *Manpage for data extraction configuration*
+* `/usr/share/man/man5/rpimonitor-alert.conf.5` : *Manpage for alert configuration*
 
 ### Web Interface
 
@@ -131,5 +132,5 @@ For supported distribution, the post installation script of package creates a li
 
 ### Data
 
-* `/var/lib/rpimonitor/web/stat` : *Directory containing* `*.rrd`
+* `/var/lib/rpimonitor/stat` : *Directory containing* `*.rrd`
 * `/var/lib/rpimonitor/updatestatus.txt` : *Current status of packages update*
