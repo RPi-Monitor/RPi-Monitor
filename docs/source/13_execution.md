@@ -109,31 +109,31 @@ The web interface configuration can also be downloaded in json format:
 
 Statistic information are stored into RRD file available in the directory `/var/lib/rpimonitor/stat/`
 
-## Startup script
+## Service and package status
 
-**RPi-Monitor** is configured to start automatically. `/etc/init.d/rpimonitor`
-and link in runlevel startup directory (`/etc/rc?.d/`) do the job. 
-This script can be executed with the following parameters:
+The official installation script enables and starts the systemd service
+`rpimonitord`. Use `systemctl` to manage it:
 
-start
-: Start `rpimonitord` daemon
-stop
-: Stop `rpimonitord` daemon
-restart
-: Stop and start `rpimonitord` daemon
-status
-: Show `rpimonitord` status
-update
-: Update 'packages to be installed' list. This information is displayed in default 
-  configuration of Web interface
-install_auto_package_status_update
-: Add a script to automatically call package update script when `apt` commands are executed
-remove_auto_package_status_update
-: Remove script automatically call for package update
+```bash
+sudo systemctl status rpimonitord
+sudo systemctl restart rpimonitord
+```
+
+The installer also schedules a daily refresh of the upgradable-packages
+information displayed by the default web interface. To refresh it immediately,
+run:
+
+```bash
+sudo /usr/share/rpimonitor/scripts/updatePackagesStatus.pl
+```
+
+The script checks for `aptitude`, `apt`, or `checkupdates`, in that order.
+The older `/etc/init.d/rpimonitor` interface belongs to legacy package
+installations and is not installed by the current script-based installer.
 
 ## Manpages
 
-See also **RPi-Monitor** manpages :
+See also **RPi-Monitor** manpages:
 
 ```text
 man rpimonitor
