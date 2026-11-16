@@ -1,12 +1,12 @@
 # Frequently Asked Questions
 
 **RPi-Monitor** is displaying `NaN` instead of value in my "unsupported" distro. Can you fixe this issue?
-: There are a lot of GNU/Linux distribution available, I can't support all of them.
-  I decided since the beginning use to Raspbian as target OS. The version v2.13 has been
-  tested with `2017-11-29-raspbian-stretch-lite.img` on **Raspberry Pi B**.
-
-  Remember, in **RPi-Monitor**, everything is configurable. It should then be possible
-  to update configuration files to match the specificities of your distro.
+: The installation script targets Debian, Raspberry Pi OS, and Ubuntu. The
+  default metrics depend on the operating system and hardware; Raspberry Pi OS
+  Bookworm is supported by the current templates. On another distribution or
+  device, a missing metric may need a customized source or template. Use the
+  [configuration helper](23_configuration_helper.md) to inspect sources and
+  generate a configuration example.
 
 <br>
 
@@ -33,19 +33,17 @@
 <br>
 
 Is **RPi-Monitor** supporting distribution XXX? Can you make **RPi-Monitor** compatible with distribution XXX?
-: **RPi-Monitor** was developed on Raspbian. This distribution is then fully supported.
-  I will not officially support any other distribution but you will find in 
-  github repository as well as in this documentation some configuration files that 
-  may help you to configure **RPi-Monitor** on your system.
-  Remember, **RPi-Monitor** is highly configurable and should be able to run on 
-  every system able to run `perl`. Have a look to [examples](27_configuration_templates.md) 
-  in this documentation for details.
+: The installation script is intended for Debian, Raspberry Pi OS, and Ubuntu.
+  Other Linux distributions may work with a community package or manual
+  adaptation, but are not covered by the official installer. The metrics
+  themselves are configurable; see the [configuration templates](27_configuration_templates.md).
 
 <br>
 
 I have a problems running `rpimonitord`:  failed "Can't locate _______.pm  in @INC ...
-: The installation is not done properly. You should read again the installation 
-  procedure and pay attention to the dependencies.
+: Check that the installation completed and that the required Perl modules are
+  installed. When using the official installer, review its output for missing
+  packages and rerun it after installing them.
 
 <br>
 
@@ -115,16 +113,11 @@ I want to create a package for my favorite distribution which is not supported b
 <br>
 
 I've some issue with my installation or customization of **RPi-Monitor** and I want to reinstall it from scratch. How can I do it?
-: Here is the instruction to reinstall **RPi-Monitor** from scratch:
-  First, uninstall **RPi-Monitor** with the following command:
-  ```text
-  apt-get purge rpimonitor
-  rm -fr /etc/rpimonitor
-  rm -fr /usr/share/rpimonitor
-  ```
-
-  Then reinstall by following [installation instruction](11_installation.md#installation-from-repository) 
-  of this documentation.
+: Back up `/etc/rpimonitor` first. For an installation managed by the
+  official script, rerun the installer with `--force` to reinstall the current
+  release while preserving configuration. If the Debian package is installed,
+  remove it with `sudo apt remove rpimonitor` before switching to the script;
+  this keeps the configuration directory.
 
 <br>
 
@@ -140,11 +133,11 @@ Some data are not extracting correctly at boot but when I restart `rpimonitord` 
 <br>
 
 I just update my distribution and **RPi-Monitor** is still saying that packages required to be updated. Why?
-: If you want to update this information immediately, you can execute this script
-  manually:  `/etc/init.d/rpimonitord update`.
-  You can also install dpkg hook to execut this update automatically.
+: The upgradable-packages information is refreshed daily. To update it now,
+  run `sudo /usr/share/rpimonitor/scripts/updatePackagesStatus.pl`. The script
+  checks for `aptitude`, `apt`, or `checkupdates`.
 
-  Refer to [startup section](13_execution.md#startup-script) of this documentation.
+  See [service and package status](13_execution.md#service-and-package-status).
 
 <br>
 
@@ -153,16 +146,7 @@ I required better resolutions of the reading provided by **RPi-Monitor**. Can we
   Refer to documentation and man page to know how use this advanced feature.
 
 I want to uninstall **RPi-Monitor**, How can I do it?
-: To uninstall **RPi-Monitor**, you can execute the following command:
-
-  ```text
-  sudo apt-get remove rpimonitor
-  ```
-
-  or:
-
-  ```text
-  sudo apt-get purge rpimontor
-  ```
-
-  Finally delete the directory `/var/lib/rpimonitor`
+: If it was installed as the legacy Debian package, use
+  `sudo apt remove rpimonitor`. The script-based installer does not currently
+  provide an uninstaller; back up your configuration and data before removing
+  installed files or disabling the systemd service.
