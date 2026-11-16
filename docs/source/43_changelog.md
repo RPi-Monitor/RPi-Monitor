@@ -2,9 +2,11 @@
 
 # Release note
 
-## v2.13-beta7
-  > [!IMPORTANT]
-  > Target version v2.13-r0 not yet published yet
+## v2.13.2
+  * Fix temperature, voltage, processor, and `/boot` metrics on Raspberry Pi OS Bookworm
+  * Fix an idle web client blocking the embedded server from handling other requests
+
+## v2.13
 
   * New: Implement sortable status items written by iaa (#166 #197)
   * New: Create documentation in <https://xavierberger.github.io/RPi-Monitor-docs/index.html>
