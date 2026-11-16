@@ -137,32 +137,32 @@ function AddDialogs() {
     '</div>';
 
   // Add About Dialog
-  dialogs +=
-    '<div id="About" class="modal fade">' +
-    '<div class="modal-dialog">' +
-    '<div class="modal-content">' +
-    '<div class="modal-header">' +
-    '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
-    '<h4 id="myModalLabel">About</h4>' +
-    '</div>' +
-    '<div class="modal-body">' +
-    '<p><b>Version</b>: {DEVELOPMENT} ' +
-    '<b>by</b> Xavier Berger</p>' +
-    'With the contribution of users sharing ideas and competences on Github.' +
-    '<br>' +
-    '<a href="http://rpi-experiences.blogspot.fr/">Blog</a>' + ' - ' +
-    '<a href="https://github.com/RPi-Monitor/RPi-Monitor">GitHub</a>' + ' - ' +
-    '<a href="https://rpi-monitor.github.io/RPi-Monitor-docs/index.html">Documentation</a>' +
-    '<hr>' +
-    '<p><b>RPi-Monitor</b> is free software developed on top of other open source ' +
-    'tools: <a href="http://twitter.github.io/bootstrap/">bootstrap</a>, <a href="http://jquery.com/">jquery</a>, <a href="https://code.google.com/p/jsqrencode/">jsqrencode</a>, <a href="http://javascriptrrd.sourceforge.net/">javascriptrrd</a> and <a href="http://www.flotcharts.org/">Flot</a>.<br>' +
-    '<p><b>Raspberry Pi</b> and the Raspberry Pi logo are properties of <a href="http://www.raspberrypi.org/">Raspberry Pi Foundation</a>.</p>' +
-    '</div>' +
-    '<div class="modal-footer">' +
-    '<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
+  dialogs+=
+    '<div id="About" class="modal fade">'+
+      '<div class="modal-dialog">' +
+        '<div class="modal-content">'+
+      '<div class="modal-header">'+
+      '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+      '<h4 id="myModalLabel">About</h4>'+
+      '</div>'+
+      '<div class="modal-body">'+
+      '<p><b>Version</b>: {DEVELOPMENT} '+
+      '<b>by</b> Xavier Berger</p>'+
+      'With the contribution of users sharing ideas and competences on Github.'+
+      '<br>'+
+      '<a href="http://rpi-experiences.blogspot.fr/">Blog</a>'+' - '+
+      '<a href="https://github.com/RPi-Monitor/RPi-Monitor">GitHub</a>' + ' - ' +
+      '<a href="https://rpi-monitor.github.io/RPi-Monitor/index.html">Documentation</a>'+
+      '<hr>'+
+      '<p><b>RPi-Monitor</b> is free software developed on top of other open source '+
+        'tools: <a href="http://twitter.github.io/bootstrap/">bootstrap</a>, <a href="http://jquery.com/">jquery</a>, <a href="https://code.google.com/p/jsqrencode/">jsqrencode</a>, <a href="http://javascriptrrd.sourceforge.net/">javascriptrrd</a> and <a href="http://www.flotcharts.org/">Flot</a>.<br>'+
+      '<p><b>Raspberry Pi</b> and the Raspberry Pi logo are properties of <a href="http://www.raspberrypi.org/">Raspberry Pi Foundation</a>.</p>'+
+      '</div>'+
+      '<div class="modal-footer">'+
+      '<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>'+
+      '</div>'+
+      '</div>'+
+    '</div>'+
     '</div>';
 
   $('#dialogs').html(dialogs);
@@ -202,35 +202,35 @@ function AddTopmenu() {
     '<a class="navbar-brand" href="index.html"><img height="20" src="' + icon + '"> &nbsp;' + menutitle + '</a>' +
     '</div>' +
     '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">' +
-    '<ul class="nav navbar-nav">' +
-    '<li id="statusmenu"><a id="statuslink" href="status.html">Status</a></li>' +
-    '<li id="statisticsmenu"><a id="statisticslink" href="statistics.html">Statistics</a></li>' +
-    '<li id="addonsmenu" class="hide"><a id="addonslink" href="addons.html">Add-ons</a></li>' +
-    '<li id="optionsmenu"><a href="#Options" data-toggle="modal">Options</a></li>' +
-    '<li class="dropdown">' +
-    '<a href="#" class="dropdown-toggle" data-toggle="dropdown">About <span class="caret"></span></a>' +
-    '<ul class="dropdown-menu" role="menu">' +
-    '<li class="dropdown-header"> <b>RPi-Monitor</b></li>' +
-    '<li><a href="#" title="Scan this qrcode to reach this page from your smartphone or tablet"><canvas id="qrcanv"><a></li>' +
-    '<li><a href="#License" data-toggle="modal">License</a></li>' +
-    '<li><a href="#About" data-toggle="modal">About</a></li>' +
-    '<li class="divider"></li>' +
-    '<li class="dropdown-header"> <b>Related links</b></li>' +
-    '<li><a href="https://RPi-Monitor.github.io/RPi-Monitor-docs/index.html" data-toggle="modal">Documentation</a></li>' +
-    '<li><a href="http://rpi-experiences.blogspot.fr/">RPi-Experiences</a></li>' +
-    '<li><a href="https://github.com/RPi-Monitor/RPi-Monitor">RPi-Monitor on GitHub</a></li>' +
-    '</ul>' +
-    '</li>' +
-    '</ul>' +
-    '<div class="pull-right hide" id="divfriends">' +
-    '<ul class="nav navbar-nav">' +
-    '<li class="dropdown">' +
-    '<a href="#" class="dropdown-toggle" data-toggle="dropdown">Friends <b class="caret"></b></a>' +
-    '<ul class="dropdown-menu dropdown-menu-right" id="friends">' +
-    '</ul>' +
-    '</li>' +
-    '</ul>' +
-    '</div>' +
+      '<ul class="nav navbar-nav">' +
+        '<li id="statusmenu"><a id="statuslink" href="status.html">Status</a></li>'+
+            '<li id="statisticsmenu"><a id="statisticslink" href="statistics.html">Statistics</a></li>'+
+            '<li id="addonsmenu" class="hide"><a id="addonslink" href="addons.html">Add-ons</a></li>'+
+            '<li id="optionsmenu"><a href="#Options" data-toggle="modal">Options</a></li>'+
+            '<li class="dropdown">' +
+        '<a href="#" class="dropdown-toggle" data-toggle="dropdown">About <span class="caret"></span></a>' +
+        '<ul class="dropdown-menu" role="menu">' +
+        '<li class="dropdown-header"> <b>RPi-Monitor</b></li>'+
+        '<li><a href="#" title="Scan this qrcode to reach this page from your smartphone or tablet"><canvas id="qrcanv"><a></li>'+
+        '<li><a href="#License" data-toggle="modal">License</a></li>'+
+        '<li><a href="#About" data-toggle="modal">About</a></li>'+
+        '<li class="divider"></li>'+
+        '<li class="dropdown-header"> <b>Related links</b></li>'+
+        '<li><a href="https://rpi-monitor.github.io/RPi-Monitor/index.html" data-toggle="modal">Documentation</a></li>'+
+        '<li><a href="http://rpi-experiences.blogspot.fr/">RPi-Experiences</a></li>'+
+        '<li><a href="https://github.com/XavierBerger/RPi-Monitor">RPi-Monitor on GitHub</a></li>'+
+        '</ul>' +
+      '</li>' +
+      '</ul>' +
+      '<div class="pull-right hide" id="divfriends">'+
+        '<ul class="nav navbar-nav">'+
+        '<li class="dropdown">'+
+          '<a href="#" class="dropdown-toggle" data-toggle="dropdown">Friends <b class="caret"></b></a>'+
+          '<ul class="dropdown-menu dropdown-menu-right" id="friends">'+
+          '</ul>'+
+        '</li>'+
+        '</ul>'+
+      '</div>'+
     '</div><!-- /.navbar-collapse -->' +
     '</div><!-- /.container-fluid -->' +
     '</nav>'
