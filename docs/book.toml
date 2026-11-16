@@ -1,0 +1,19 @@
+[book]
+title = "RPi-Monitor v2.13-r0"
+authors = ["Xavier Berger"]
+language = "en"
+src = "source"
+
+[build]
+build-dir = "build/html"
+create-missing = false
+
+[output.html]
+no-section-label = true
+git-repository-url = "https://github.com/RPi-Monitor/RPi-Monitor"
+edit-url-template = "https://github.com/RPi-Monitor/RPi-Monitor/edit/develop/docs/{path}"
+additional-css = ["theme/rpimonitor.css"]
+
+# The print page stacks every chapter, so the fixed WIP ribbons would pile up there.
+[output.html.print]
+enable = false
