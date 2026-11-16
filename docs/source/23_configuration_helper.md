@@ -72,7 +72,7 @@ The value extracted is variable so `dynamic` so enter `No`.
 
 **RPi-Monitor** gives you the template of configuration. You now have to copy it 
 into an existing configuration file or add a new file in
-`/etc/rpimonitord/` directory or subdirectory. Update the text inside `<>` to 
+`/etc/rpimonitor/` or one of its subdirectories. Update the text inside `<>` to
 define how data should be stored. Include this file in `data.conf`.
 
 ```text
@@ -85,4 +85,4 @@ dynamic.1.rrd=GAUGE
 
 Once the configuration will be apply, restart **RPi-Monitor** with the command:
 
-`/etc/init.d/rpimonitor restart`
+`sudo systemctl restart rpimonitord`
