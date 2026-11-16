@@ -81,7 +81,7 @@ The command and regular expression will be the following:
 * sda3 disk size command : `df -t ext4,  regular expression: sda3\s+(\d+)`
 * sda3 used space command : `df -t ext4,  regular expression: sda3\s+\d+\s+(\d+)`
 
-First we need to configure the extraction of partitions sizes which are extracted once at RPi-Monitor startup. We will create a file /etc/rpimonitord.conf.d/custo.conf with the data configured as static data like this:
+First we need to configure the extraction of partition sizes, which are extracted once at RPi-Monitor startup. We will create `/etc/rpimonitor/template/custom.conf` and include it from the main configuration:
 
 ```text
 static.1.name=storage1_total 
@@ -151,7 +151,7 @@ To see our modification we need to restart **RPi-Monitor** and refresh the
 statistics page into our browser.
 
 ```text
-sudo  service rpimonitor restart
+sudo systemctl restart rpimonitord
 ```
 
 
@@ -247,7 +247,8 @@ snmpagent.description=description
 snmpagent.revision=201802030000Z
 ```
 
-Update `/etc/rpimonitor/date.conf`
+For example, the default Raspberry Pi OS configuration includes
+`/etc/rpimonitor/template/cpu.conf`.
 
 ```text
 /etc/rpimonitor/template/cpu.conf
@@ -262,7 +263,7 @@ The file `/etc/rpimonitor/template/cpu.conf` is containing the following configu
 Restart **RPi-Monitor** to activate the configuration
 
 ```text
-sudo /etc/init.d/rpimonitor restart
+sudo systemctl restart rpimonitord
 ```
 
 Configure snmp to work with **RPi-Monitor** and restart `snmpd`
