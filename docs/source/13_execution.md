@@ -137,7 +137,8 @@ See also **RPi-Monitor** manpages :
 
 ```text
 man rpimonitor
-man rpimonitor-data
-man rpimonitor-daemon
+man rpimonitor-daemon.conf
+man rpimonitor-data.conf
+man rpimonitor-alert.conf
 ```
  

@@ -108,8 +108,10 @@ For supported distribution, the post installation script of package creates a li
 
 ### Manpages
 
-* `/usr/share/man/man5/rpimonitord.conf.5.gz` : *Manpage for rpimonitor and data extraction configuration*
-* `/usr/share/man/man1/rpimonitord.1.gz` : *Manpage for rpimonitord command line usage*
+* `/usr/share/man/man1/rpimonitor.1.gz` : *Manpage for rpimonitord command line usage*
+* `/usr/share/man/man5/rpimonitor-daemon.conf.5.gz` : *Manpage for daemon configuration*
+* `/usr/share/man/man5/rpimonitor-data.conf.5.gz` : *Manpage for data extraction configuration*
+* `/usr/share/man/man5/rpimonitor-alert.conf.5.gz` : *Manpage for alert configuration*
 
 ### Web Interface
 
