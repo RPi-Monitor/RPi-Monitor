@@ -1,24 +1,6 @@
-:github_url: https://github.com/XavierBerger/RPi-Monitor/blob/develop/docs/source/10_index.rst
+# Getting started
 
-Getting started
-===============
-
-.. toctree::
-   :maxdepth: 2
-   
-   11_installation
-
-.. toctree::
-   :maxdepth: 2
-
-   12_custom_installation
-
-.. toctree::
-   :maxdepth: 2
-
-   13_execution
-   
-.. toctree::
-   :maxdepth: 2
-
-   14_faq
+- [Installation and upgrade](11_installation.md)
+- [Custom installation](12_custom_installation.md)
+- [Understanding program execution](13_execution.md)
+- [Frequently Asked Questions](14_faq.md)
