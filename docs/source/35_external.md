@@ -1,83 +1,77 @@
-:github_url: https://github.com/XavierBerger/RPi-Monitor/blob/develop/docs/source/35_external.rst
-:wip:
+<img class="wip-ribbon" src="_static/wip.png" alt="Work in progress">
 
-Non standard configuration
-==========================
+# Non standard configuration
 
-Use it with my own Web Server
------------------------------
+## Use it with my own Web Server
 
 In this example I will use the **nginx** server. You could use the same tactic with 
 your preferred web server.
 
 
 Let's first update the configuration file to disable the embedded web server. 
-Edit the file ``/etc/rpimonitor/daemon.conf`` and set ``daemon.noserver=1``.
+Edit the file `/etc/rpimonitor/daemon.conf` and set `daemon.noserver=1`.
 
 
 Then restart RPi-Monitor with the command:
 
-::
-
-    sudo service rpimonitor restart
+```text
+sudo service rpimonitor restart
+```
 
 
 The embedded server is no longer running so we will need to configure another server to access the data.
 
 
-For nginx we will create the file ``/etc/nginx/sites-enabled/rpimonitor`` with the following content:
+For nginx we will create the file `/etc/nginx/sites-enabled/rpimonitor` with the following content:
 
-::
-
-    server {     
-        listen 80;     
-        index index.html;     
-        root /usr/share/rpimonitor/web; 
-    }
+```text
+server {     
+    listen 80;     
+    index index.html;     
+    root /usr/share/rpimonitor/web; 
+}
+```
 
 Restart the server with the command:
 
-::
-
-    sudo service nginx restart
+```text
+sudo service nginx restart
+```
 
 And add the symlink:
 
-::
-
-    sudo ln -s /var/lib/rpimonitor/stat /usr/share/rpimonitor/web/stat
+```text
+sudo ln -s /var/lib/rpimonitor/stat /usr/share/rpimonitor/web/stat
+```
 
 Now you can reach **RPi-Monitor** with your favorite browser on your favorite web server.
 
 
-RPi-Monitor on sunxi
----------------------
+## RPi-Monitor on sunxi
 **Author**: Thomas Kaiser 
 
-Overview
-^^^^^^^^
+### Overview
 
 **RPi-Monitor** is a self monitoring application designed to run on Raspberry Pi.
 
-With a few adjustments it can also be used on numerous `sunxi devices <http://linux-sunxi.org/Main_Page>`_ 
-that are using the `A10 <http://linux-sunxi.org/Category:A10_Boards>`_, 
-`A13 <http://linux-sunxi.org/Category:A13_Boards>`_ or 
-`A20 <http://linux-sunxi.org/Category:A20_Boards>`_ SoC since they all feature 
-the same power management unit `AXP209 <http://linux-sunxi.org/AXP209>`_.
+With a few adjustments it can also be used on numerous [sunxi devices](http://linux-sunxi.org/Main_Page) 
+that are using the [A10](http://linux-sunxi.org/Category:A10_Boards), 
+[A13](http://linux-sunxi.org/Category:A13_Boards) or 
+[A20](http://linux-sunxi.org/Category:A20_Boards) SoC since they all feature 
+the same power management unit [AXP209](http://linux-sunxi.org/AXP209).
 
-Installation/Configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Installation/Configuration
 
 All you have to do is to relink RPi-Monitor's `data.conf` to `sunxi_axp209.conf`, 
 ensure that `/usr/share/rpimonitor/scripts/sunxi-temp-daemon.sh` is running as 
 root and restart the *rpimonitor* service/daemon afterwards:
 
-::
-
-	# stop rpimonitor
-	ln -f -s /etc/rpimonitor/template/sunxi_axp209.conf /etc/rpimonitor/data.conf
-	nohup /usr/share/rpimonitor/scripts/sunxi-temp-daemon.sh &
-	# start rpimonitor
+```text
+# stop rpimonitor
+ln -f -s /etc/rpimonitor/template/sunxi_axp209.conf /etc/rpimonitor/data.conf
+nohup /usr/share/rpimonitor/scripts/sunxi-temp-daemon.sh &
+# start rpimonitor
+```
 
 You should ensure that the `sunxi-temp-daemon.sh` daemon is started at boot, eg. 
 by adding `/usr/share/rpimonitor/scripts/sunxi-temp-daemon.sh &` to 
@@ -87,8 +81,7 @@ SATA disks and the SoC's temperature under high load. Now the daemon collects
 these thermal values in a loop and writes them to 3 files below /tmp/ where 
 they can be fetched by rpimonitor.
 
-Monitoring disks
-^^^^^^^^^^^^^^^^
+### Monitoring disks
 
 If you use a SATA disk and want its temperature to be monitored you'll need to 
 install the *hddtemp* package since the daemon relies on the `/usr/sbin/hddtemp` 
@@ -97,9 +90,9 @@ binary. If you've a USB disk instead that is
 then you might install the *smartmontools* package and replace the `hddtemp` call in 
 `sunxi-temp-daemon.sh` with an appropriate `smartctl -d` call:
 
-::
-
-	/usr/sbin/smartctl -d sat|usbsunplus|usbcypress|usbjmicron|usbprolific -a /dev/sda | awk -F" " '/Temperature_Cel/ {print $10}'
+```text
+/usr/sbin/smartctl -d sat|usbsunplus|usbcypress|usbjmicron|usbprolific -a /dev/sda | awk -F" " '/Temperature_Cel/ {print $10}'
+```
 
 You've to try out which expressions work for your combination of USB enclosure 
 and disk since different enclosures can be accessed differently and temperature 
@@ -111,8 +104,7 @@ you're interested in, especially those related to drive health. But this is left
 as an excercise for the reader and a better job for 
 [smartd](https://www.smartmontools.org/browser/trunk/smartmontools/smartd.8.in).
 
-Caveats
-^^^^^^^
+### Caveats
 
 Most informations regarding the power management unit rely on the ability to
 query the AXP209 via I2C/sysfs. A driver for kernel 3.4 provides internal 
@@ -132,8 +124,7 @@ internal thermal sensor (that is more reliable than the SoC's) when using
 mainline kernel.
 
 
-Use it into another Linux distribution 
---------------------------------------
+## Use it into another Linux distribution
 
 RPi-Monitor has been designed to run into a Raspberry Pi but as it is using only 
 standard Linux resources, it is not hardware dependent. A simple configuration 
@@ -148,7 +139,7 @@ the package as described in this previous post.
 With CentOS and withe any non Debian based distribution it will required to 
 perform a manual installation.
 
-First install the perl dependencies: HTTP::Daemon (``perl-libwww-perl``), RRD (``rrdtool-perl``) and JSON(``perl-JSON``)
+First install the perl dependencies: HTTP::Daemon (`perl-libwww-perl`), RRD (`rrdtool-perl`) and JSON(`perl-JSON`)
 
 
 Connect to github  and select the latest stable branch on the top left dropdown list.
@@ -158,25 +149,25 @@ Then download the code as zip file from the link "Download zip" visible at the b
 
 Unpack it.
 
-::
-
-    unzip Version-2.x.zip
+```text
+unzip Version-2.x.zip
+```
 
 
 Finally install rpimonitor manually:
 
-::
-
-    su -
-    mv Version-2.x/rpimonitor /usr/local
+```text
+su -
+mv Version-2.x/rpimonitor /usr/local
+```
 
 
 You can now start RPi-Monitor with the following commands:
 
-::
-
-    cd /usr/local/rpimonitor
-    ./rpimonitird -c rpimonitor.conf -c default.conf
+```text
+cd /usr/local/rpimonitor
+./rpimonitird -c rpimonitor.conf -c default.conf
+```
 
 
 Note: I will not describe here how to configure the auto startup since each 
