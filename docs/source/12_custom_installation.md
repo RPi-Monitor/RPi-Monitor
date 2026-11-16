@@ -1,7 +1,7 @@
 # Custom installation
 
 ## Installation from Debian package
-Download the latest package from the official repository in [Github](https://github.com/XavierBerger/RPi-Monitor-deb/tree/master/packages):
+Download the latest package from the official repository in [Github](https://github.com/RPi-Monitor/RPi-Monitor-deb/tree/master/packages):
 
 ```text
 wget https://goo.gl/yDYFhy -O rpimonitor_latest.deb
@@ -101,7 +101,7 @@ michaelmiklis/rpi-monitor:latest
 ```
 
 All the detail are gathered in [DockerHub](https://hub.docker.com/r/michaelmiklis/rpi-monitor/) pages of the 
-[Docker-RPi-Monitor](https://github.com/XavierBerger/Docker-RPi-Monitor) project.
+[Docker-RPi-Monitor](https://github.com/RPi-Monitor/Docker-RPi-Monitor) project.
 
 > [!NOTE]
 > This docker image is based on [resin/rpi-raspbian:latest](https://hub.docker.com/r/resin/rpi-raspbian/) image and is
@@ -109,7 +109,7 @@ All the detail are gathered in [DockerHub](https://hub.docker.com/r/michaelmikli
 
 ## Yocto
 
-`meta-rpiexperiences` is available on [github](https://github.com/XavierBerger/meta-rpiexperiences) 
+`meta-rpiexperiences` is available on [github](https://github.com/RPi-Monitor/meta-rpiexperiences) 
 gathering the recipes to add **RPi-Monitor** and all its dependencies to your project.
 [meta-rpiexperiences](http://layers.openembedded.org/layerindex/branch/master/layer/meta-rpiexperiences/)
 and [rpimonitor](http://layers.openembedded.org/layerindex/recipe/52439/) are referenced on
@@ -171,7 +171,7 @@ In this section the contents of the layer is listed, along with a short help for
 
 **Maintenance**
 
-Send pull requests, patches, comments or questions to <https://github.com/XavierBerger/meta-rpiexperiences/issues>
+Send pull requests, patches, comments or questions to <https://github.com/RPi-Monitor/meta-rpiexperiences/issues>
 
 * **Maintainer**: Xavier Berger
 

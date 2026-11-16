@@ -218,7 +218,7 @@ function AddTopmenu() {
         '<li class="dropdown-header"> <b>Related links</b></li>'+
         '<li><a href="https://rpi-monitor.github.io/RPi-Monitor/index.html" data-toggle="modal">Documentation</a></li>'+
         '<li><a href="http://rpi-experiences.blogspot.fr/">RPi-Experiences</a></li>'+
-        '<li><a href="https://github.com/XavierBerger/RPi-Monitor">RPi-Monitor on GitHub</a></li>'+
+        '<li><a href="https://github.com/RPi-Monitor/RPi-Monitor">RPi-Monitor on GitHub</a></li>'+
         '</ul>' +
       '</li>' +
       '</ul>' +

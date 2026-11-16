@@ -98,7 +98,7 @@ I would like to monitor a cluster of raspberries with your tool. Is there a way 
 <br>
 
 I found a bug into **RPi-Monitor**. How can I share my discovery?
-: You should open an issue in [github](https://github.com/XavierBerger/RPi-Monitor/issues) 
+: You should open an issue in [github](https://github.com/RPi-Monitor/RPi-Monitor/issues) 
   and describe you problem and how to reproduce it.
 
 <br>

@@ -2,11 +2,7 @@
 
 ## Authors
 
-Maintener: 
-: XavierBerger
-
-Contributors:
-: <https://github.com/XavierBerger/RPi-Monitor/graphs/contributors>
+Contributors: <https://github.com/RPi-Monitor/RPi-Monitor/graphs/contributors>
 
 ---------
 

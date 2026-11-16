@@ -1,7 +1,7 @@
 # Contributing
 
 If you want to contribute to **RPi-Monitor** and propose a pull request, first 
-create a fork from [github](https://github.com/XavierBerger/RPi-Monitor)
+create a fork from [github](https://github.com/RPi-Monitor/RPi-Monitor)
 
 ## Contribute to documentation
 **RPi-Monitor** documentation is written in Markdown using
@@ -39,12 +39,12 @@ Whether you've found an issue with **RPi-Monitor**, here's how to report the pro
 First, check the documentation for solutions to common problems.
 
 #### To file a bug
-* Go to [issue tracker on GitHub](https://github.com/XavierBerger/RPi-Monitor/issues)
+* Go to [issue tracker on GitHub](https://github.com/RPi-Monitor/RPi-Monitor/issues)
 * Search for existing issues using the search field at the top of the page
 * File a new issue with all details explaining how to reproduce the bug
 
 #### Requesting a feature
-Feel free to file new feature requests as an [issue on GitHub](https://github.com/XavierBerger/RPi-Monitor/issues), just like a bug.
+Feel free to file new feature requests as an [issue on GitHub](https://github.com/RPi-Monitor/RPi-Monitor/issues), just like a bug.
 
 ### Propose a merge request
 

@@ -4,7 +4,7 @@ Vous découvrirez dans la suite de cette dépêche comment **RPi-Monitor** est v
 
 ----
  [RPi-Experiences - Blog officiel de RPi-Monitor](http://rpi-experiences.blogspot.fr/)
- [RPi-Monitor sur github](https://github.com/XavierBerger/Rpi-Monitor)
+ [RPi-Monitor sur github](https://github.com/RPi-Monitor/Rpi-Monitor)
  [RPi-Monitor sur eLinux](http://elinux.org/RPi-Monitor) 
  [RPi-Monitor-peeble](http://rpi-experiences.blogspot.fr/2014/10/rpi-monitor-peeble-rpi-monitor-is-now.html#more)
  
@@ -19,7 +19,7 @@ C'est comme ça qu'est né **RPi-Monitor** et c'est aussi ce qui explique le nom
 
 # Une aventure dans le monde du Libre #
 **RPi-Monitor** utilise plusieurs bibliothèques libres comme [Bootstrap](http://twitter.github.io/bootstrap/), [jQuery](http://jquery.com/), [jsqrencode](https://code.google.com/p/jsqrencode/), [justgage](http://justgage.com/), [JavascriptRRD](http://javascriptrrd.sourceforge.net/) et [flot](http://www.flotcharts.org/). 
-Il était donc tout naturel de publier **RPi-Monitor** sous licence libre (_GPLv3_ en l'occurrence). Les sources sont disponibles sur github: [https://github.com/XavierBerger](https://github.com/XavierBerger)/[RPi-Monitor](https://github.com/XavierBerger/RPi-Monitor). 
+Il était donc tout naturel de publier **RPi-Monitor** sous licence libre (_GPLv3_ en l'occurrence). Les sources sont disponibles sur github: [https://github.com/RPi-Monitor](https://github.com/RPi-Monitor)/[RPi-Monitor](https://github.com/RPi-Monitor/RPi-Monitor). 
 
 
 Pour faire connaître mon logiciel, j'ai fait une [annonce](https://www.raspberrypi.org/forums/viewtopic.php?p=345924#p345924) (en Français et en Anglais) sur les forums de [raspberrypi.org](http://raspberrypi.org). J'ai aussi créé une page sur [eLinux.org](http://elinux.org/RPi-Monitor) et un blog: [RPi-Experiences](http://rpi-experiences.blogspot.fr/) sur laquelle j'annonce la publication de nouvelles versions et explique comment se servir et personnaliser le logiciel.
@@ -28,7 +28,7 @@ Pour faire connaître mon logiciel, j'ai fait une [annonce](https://www.raspberr
 Quelques temps après cette première publication, j'ai eu des retours constructifs sur des axes d'amélioration, des remarques sur certains bugs. Ces retours ont permis d'améliorer **RPi-Monitor** tout au cours des 20 versions déjà publiées.
 
 
-Je fournis un paquet Debian disponible sur Github transformé pour l'occasion en dépôt (cf. [RPi-Monitor-deb](https://github.com/XavierBerger/RPi-Monitor-deb) pour voir comment mettre en œuvre cette astuce). D'autres personnes ont pris l'initiative de créer les paquets d'installation de **RPi-Monitor** pour [ArchLinux](https://aur.archlinux.org/packages/rpimonitor/) et même [Gentoo](https://github.com/srcshelton/gentoo-ebuilds/tree/master/www-apps/rpi-monitor).
+Je fournis un paquet Debian disponible sur Github transformé pour l'occasion en dépôt (cf. [RPi-Monitor-deb](https://github.com/RPi-Monitor/RPi-Monitor-deb) pour voir comment mettre en œuvre cette astuce). D'autres personnes ont pris l'initiative de créer les paquets d'installation de **RPi-Monitor** pour [ArchLinux](https://aur.archlinux.org/packages/rpimonitor/) et même [Gentoo](https://github.com/srcshelton/gentoo-ebuilds/tree/master/www-apps/rpi-monitor).
 
 
 Un peu plus tard, j'ai reçu un courriel en provenance de Russie me demandant l'autorisation d'utiliser le nom **RPi-Monitor** pour une application tournant sur les montres [Pebble](https://getpebble.com/): [RPi-Monitor-Pebble](http://rpi-experiences.blogspot.fr/2014/10/rpi-monitor-peeble-rpi-monitor-is-now.html#more). J'ai bien évidemment accepté et même publié un article sur mon blog pour faire connaître cette application permettant d'afficher les informations issues de **RPi-Monitor** sur une _smartwatch_. Plus récemment, j'ai reçu des propositions de modification de code pour afficher les informations issues sur plusieurs colonnes, bout de code ajouté dans la branche _devel_ de github et qui fera parti de la prochaine version. Ce ne sont que quelques exemples de la force du partage du monde libre car l'aventure n'est pas terminée.
@@ -50,37 +50,37 @@ Voici quelques copies d'écran qui parleront certainement plus qu'un long discou
 La page d'accueil avec un exemple d'utilisation de [JustGage](http://justgage.com/) et le QRCode permettant d'afficher la page courante sur un mobile:
 
 
-![RPi-Monitor_1ColumnStatusPage](https://raw.githubusercontent.com/XavierBerger/RPi-Monitor/master/screenshots/RPi-Monitor_1ColumnStatusPage.png)
+![RPi-Monitor_1ColumnStatusPage](https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/master/screenshots/RPi-Monitor_1ColumnStatusPage.png)
 
 
 La page d'accueil de **RPi-Monitor** tournant sur Ubuntu 14.04.2 LTS sur un grand écran permettant d'afficher 3 colonnes. L'addon _top3_ a été ajouté à cette page (dans la section CPU):
 
-![RPi-Monitor_3ColumnsStatusPage](https://raw.githubusercontent.com/XavierBerger/RPi-Monitor/master/screenshots/RPi-Monitor_3ColumnsStatusPage.png)
+![RPi-Monitor_3ColumnsStatusPage](https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/master/screenshots/RPi-Monitor_3ColumnsStatusPage.png)
 
 
 L'interface de **RPi-Monitor** est _responsive_ et s'adapte à la taille de l'écran. Voici à quoi ressemble la page d'accueil sur un mobile.
 
 
-![RPi-Monitor_SmartphoneStatusPage](https://raw.githubusercontent.com/XavierBerger/RPi-Monitor/master/screenshots/RPi-Monitor_SmartphoneStatusPage.png)
+![RPi-Monitor_SmartphoneStatusPage](https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/master/screenshots/RPi-Monitor_SmartphoneStatusPage.png)
 
 
 La page des statistiques présente des graphiques interactifs générés par le navigateur grâce à [JavascriptRRD](http://javascriptrrd.sourceforge.net/) qui intègrent une fonction zoom.
 
 
-![RPi-Monitor_StatisticsPage](https://raw.githubusercontent.com/XavierBerger/RPi-Monitor/master/screenshots/RPi-Monitor_StatisticsPage.png)
+![RPi-Monitor_StatisticsPage](https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/master/screenshots/RPi-Monitor_StatisticsPage.png)
 
 
 
 Il est possible d'ajouter des pages d'addons intégrant par exemple [ShellInABox](https://github.com/shellinabox/shellinabox) directement dans l'interface de **RPi-Monitor**. 
 
 
-![RPi-Monitor_ShellInABoxAddOn](https://raw.githubusercontent.com/XavierBerger/RPi-Monitor/master/screenshots/RPi-Monitor_ShellInABoxAddOn.png)
+![RPi-Monitor_ShellInABoxAddOn](https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/master/screenshots/RPi-Monitor_ShellInABoxAddOn.png)
 
 
 Un autre exemple est l'intégration d'un addon interagissant avec [Hawkeye](https://github.com/ipartola/hawkeye) et affichant l'image d'un _selfy_ capturé par une webcam directement dans l'interface de **RPi-Monitor**. (On ne se serait pas déjà vu quelque part?)
 
 
-![RPi-Monitor_HawkeyeSelfie](https://raw.githubusercontent.com/XavierBerger/RPi-Monitor/master/screenshots/RPi-Monitor_HawkeyeSelfie.png)
+![RPi-Monitor_HawkeyeSelfie](https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/master/screenshots/RPi-Monitor_HawkeyeSelfie.png)
 
 
 Les copies d'écrans pourraient se multiplier à l'infini car...
@@ -160,8 +160,8 @@ Tout ceci peut paraître un peu compliqué au premier abord mais vous pourrez tr
 
 
 * **[RPi-Monitor-peeble](http://rpi-experiences.blogspot.fr/2014/10/rpi-monitor-peeble-rpi-monitor-is-now.html#more)**: Déjà cité plus haut permettant d'accéder aux données de **RPi-Monitor** depuis un monter _Pebble_.
-* **[RPi-Monitor-deb](https://github.com/XavierBerger/RPi-Monitor-deb)**: Dépôt debian permettant de faire une installation et une mise à jour avec les commandes _apt-get_ ou _aptitude_.
-* **[RPi-Monitor-LCD](https://github.com/XavierBerger/RPi-Monitor-LCD)**: Machine d'état programmée en Python permettant d'afficher les données de **RPi-Monitor** sur un écran LCD piloté par un Raspberry-Pi et d'interagir avec quelques boutons connectés au port GPIO d'un Raspberry-Pi.
+* **[RPi-Monitor-deb](https://github.com/RPi-Monitor/RPi-Monitor-deb)**: Dépôt debian permettant de faire une installation et une mise à jour avec les commandes _apt-get_ ou _aptitude_.
+* **[RPi-Monitor-LCD](https://github.com/RPi-Monitor/RPi-Monitor-LCD)**: Machine d'état programmée en Python permettant d'afficher les données de **RPi-Monitor** sur un écran LCD piloté par un Raspberry-Pi et d'interagir avec quelques boutons connectés au port GPIO d'un Raspberry-Pi.
 * **RPi-Monitor-SNMP**: Projet d'interface pour **RPi-Monitor** pouvant remplacer ou ajoutant une interface SNMP. Cette interface permettra d'utiliser le moteur d'extraction de **RPi-Monitor** dans le but d'une intégration dans un système de surveillance plus puissant.
 * **RPi-Monitor-Notifier**: Projet de programme permettant d'émettre des alertes par mail, SMS ou d'autre moyens suivant des règles définies par l'utilisateur.
 * **meta-rpiexperiences/recipe-rpimonitor...**: Recettes pour Yocto permettant installer **RPi-Monitor** et ses compagnons sur systèmes embarqués. Note: Il me reste à comprendre comment décrire les dépendances vers les modules Perl dans mes recettes...

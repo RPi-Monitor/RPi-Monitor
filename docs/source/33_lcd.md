@@ -1,7 +1,7 @@
 # RPi-Monitor-LCD
 
 This chapter is explaining how to use **RPi-Monitor-LCD** available in this
-[github repository](https://github.com/XavierBerger/RPi-Monitor-LCD)
+[github repository](https://github.com/RPi-Monitor/RPi-Monitor-LCD)
 
 PCD8544 is a small and cheap LCD screen. We will see in this chapter how to use
 it and connect it to **RPi-Monitor**.
