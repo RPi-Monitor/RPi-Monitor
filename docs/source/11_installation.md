@@ -1,71 +1,75 @@
 # Installation and upgrade
 
-## Installation from repository
+## Supported installation
 
-**RPi-Monitor** is providing a debian repository. This repository makes 
-installation and update accessible with the command `apt`, `apt-get` or `aptitude`.
+The recommended way to install **RPi-Monitor** is the unified installation
+script. It downloads the latest stable release from GitHub, checks the
+published SHA-256 checksum, installs the required packages, and configures the
+systemd service.
 
-To use this repository follow the instruction bellow:
+On Debian, Raspberry Pi OS, or Ubuntu, run:
 
-Install **RPi-Monitor**'s public key to trust **RPi-Monitor** repository:
-
-```text
-sudo apt-get install dirmngr
-sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 43A579636E330A99A8336C14E4E362DE2C0D3C0F
+```bash
+curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash
 ```
 
-Execute the following command to add **RPi-Monitor** into your list of repository: 
+The script requires Bash, root privileges, an interactive terminal for
+confirmation, and `curl`, `jq`, and `unzip`. It installs the latest stable
+release by default. If **RPi-Monitor** is already installed by this script,
+running it again updates the installation and preserves the configuration in
+`/etc/rpimonitor`. The web interface is available on port `8888` by default;
+the listening port can be changed in `daemon.conf`.
 
-```text
-echo "deb https://www.giteduberger.fr rpimonitor/" | sudo tee /etc/apt/sources.list.d/rpimonitor.list
+> [!IMPORTANT]
+> Run the script with Bash, not `sh`. If the legacy Debian package is
+> installed, remove it first with `sudo apt remove rpimonitor`; the package
+> removal keeps `/etc/rpimonitor`. Back up your configuration before changing
+> installation methods.
+
+## Installation options
+
+Pass options after the script URL with `bash -s --`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash -s -- --help
 ```
 
+| Option | Description |
+| --- | --- |
+| `-h`, `--help` | Show help and exit. |
+| `-y`, `--yes` | Confirm automatically; required when no interactive terminal is available. |
+| `--version VERSION` | Install a specific published release, such as `2.13.2`. A leading `v` is optional. |
+| `--pre-release` | Select the newest published release, including pre-releases. |
+| `--force` | Reinstall even when the requested version is already installed. |
+| `--dry-run` | Preview system commands without applying installation changes. Root privileges are still required. |
+| `--no-service` | Do not enable, start, or restart the systemd service. |
 
-To install **RPi-Monitor**, execute the following command:
+For example, to install a specific release without prompting:
 
-```text
-sudo apt-get update
-sudo apt-get install rpimonitor
+```bash
+curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash -s -- --version 2.13.2 --yes
 ```
 
-> [!TIP]
-> **RPi-Monitor** is designed to start automatically and collect metrics.
-> The web interface is available on address <http://raspberrypi.local:8888>.
-
-> [!NOTE]
-> You may notice that **RPiMonitor** repository is hosted on
-> [http://giteduberger.fr/](https://giteduberger.fr/en)
-
-
-## First step
-
-After first installation you will see the following message:
-
-<figure>
-<img src="_static/firststep001.png">
-</figure>
-
-Execute the following command to update packages information
-
-```text
-sudo /etc/init.d/rpimonitor update
-```
-
+Options can be combined. `--pre-release` should be used only when you are
+prepared to run a version that may not be stable.
 
 ## Upgrade
 
-If you have performed an [installation from repository](11_installation.md#installation-from-repository)
-you can upgrade **RPi-Monitor** with the following command:
+To upgrade an installation managed by this script, run the same command again.
+It selects the latest stable release, preserves configuration files, and
+restarts the service if needed. New templates are added without overwriting
+local configuration; if an installed template differs from the release copy,
+the new version is saved with a `.new` suffix. Use `--version VERSION` to
+select a particular release or `--force` to reinstall the current version.
 
-```text
-sudo apt-get update
-sudo apt-get upgrade
+The daily package-status update is handled automatically. To refresh the
+upgradable-packages information immediately, run:
+
+```bash
+sudo /usr/share/rpimonitor/scripts/updatePackagesStatus.pl
 ```
 
-
-After installation you should excute the following command to update information 
-about upgradable packages:
-
-```text
-sudo /etc/init.d/rpimonitor update
-```
+> [!NOTE]
+> `TARGET_DIR` can direct deployed files to an alternate root, for example
+> `sudo TARGET_DIR=/tmp/rpi-root bash ./install.sh --dry-run`. It does not
+> isolate host-level operations such as package management or systemd.
