@@ -1,52 +1,32 @@
 # Custom installation
 
-## Installation from Debian package
-Download the latest package from the official repository in [Github](https://github.com/RPi-Monitor/RPi-Monitor-deb/tree/master/packages):
+## Other platforms and package integrations
 
-```text
-wget https://goo.gl/yDYFhy -O rpimonitor_latest.deb
-```
+The official installation script targets Debian, Raspberry Pi OS, and Ubuntu.
+The former third-party Debian repository and manual `.deb` instructions are no
+longer the recommended installation path. For a supported system, follow
+[Installation and upgrade](11_installation.md).
 
-If you have issue with GnuTLS: A TLS warning alert coming from Github you can download it with the following command:
+Community integrations for other distributions may be available, but are
+maintained independently and may not track the current release:
 
-```text
-curl -L https://goo.gl/yDYFhy -o rpimonitor_latest.deb
-```
-
-Install the dependencies by executing the following command (use command 
-`apt-get` or `apt` if `aptitude` is not available on your target system):
-
-```text
-sudo aptitude install librrds-perl libhttp-daemon-perl libjson-perl \
-libipc-sharelite-perl libfile-which-perl libsnmp-extension-passpersist-perl
-```
-
-Installation or upgrade can be done with the command:
-
-```text
-sudo dpkg -i rpimonitor_latest.deb
-```
-
-Complete the installation with the command:
-
-```text
-sudo /usr/share/rpimonitor/scripts/updatePackagesStatus.pl
-```
-
-## Installing on Gentoo
+### Gentoo
 **Gentoo** users can find the [ebuild](https://github.com/srcshelton/gentoo-ebuilds/tree/master/www-apps/rpi-monitor) created by Stuart Shelton.
 
-## Installing on Arch Linux
+### Arch Linux
 **Arch Linux** users can find the [aur package](https://aur.archlinux.org/packages/rpimonitor/) created by ajs124. 
 
 Development branch package is located [here](https://aur.archlinux.org/packages/rpimonitor-dev-git/)
 
-## Installation from sources
+### Installation from sources
 
-For manual installation, refer to [Packaging](41_contributing.md#packaging) 
-instruction which describes how and where install files. 
+The release archive uses a root-based filesystem layout. The installation
+script handles deployment, dependencies, configuration preservation, and
+systemd integration; manual installation on other distributions requires
+adapting those steps to the target system. See
+[Packaging](41_contributing.md#packaging) for the installed file layout.
 
-## Docker
+## Docker (community image)
 
 ### Docker in few words
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Docker_(software))
@@ -107,7 +87,7 @@ All the detail are gathered in [DockerHub](https://hub.docker.com/r/michaelmikli
 > This docker image is based on [resin/rpi-raspbian:latest](https://hub.docker.com/r/resin/rpi-raspbian/) image and is
 > then designed to run on ARM based architecture such as Raspberry Pi.
 
-## Yocto
+## Yocto (community layer)
 
 `meta-rpiexperiences` is available on [github](https://github.com/RPi-Monitor/meta-rpiexperiences) 
 gathering the recipes to add **RPi-Monitor** and all its dependencies to your project.
