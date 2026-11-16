@@ -1,106 +1,144 @@
-:github_url: https://github.com/XavierBerger/RPi-Monitor/blob/develop/docs/source/02_screenshots.rst
-
-Screenshots
-===========
-
-.. figure:: _static/addons001.png
-   :align: center
-   :width: 500px
-
-   Addons welcome page explaining how to use Addons
+# Screenshots
 
 -----
 
-.. figure:: _static/addons002.png
-   :align: center
+<figure>
+<img src="_static/addons001.png" width="500">
+<figcaption>
 
-   Top3 addons Addons showing 3 processes using the most time of CPU and `rpimonitord` process cpu usage
+Addons welcome page explaining how to use Addons
 
------
-
-.. figure:: _static/addons003.png
-   :align: center
-   :width: 500px
-
-   Custom addon example explaining how to use custom addon
+</figcaption>
+</figure>
 
 -----
 
-.. figure:: _static/addons006.png
-   :align: center
-   :width: 500px
+<figure>
+<img src="_static/addons002.png">
+<figcaption>
 
-   Example addons explaining how to create an addon for **RPi-Monitor**
+Top3 addons Addons showing 3 processes using the most time of CPU and `rpimonitord` process cpu usage
 
------
-
-.. figure:: _static/advancedservices001.png
-   :align: center
-   :width: 500px
-
-   Advanced services example showing how to use Labels
+</figcaption>
+</figure>
 
 -----
 
-.. figure:: _static/features001.png
-   :align: center
-   :width: 500px
+<figure>
+<img src="_static/addons003.png" width="500">
+<figcaption>
 
-   Status page
+Custom addon example explaining how to use custom addon
 
------
-
-.. figure:: _static/friends001.png
-   :align: center
-   :width: 500px
-
-   Status page showing friends
+</figcaption>
+</figure>
 
 -----
 
-.. figure:: _static/hdd003.png
-   :align: center
-   :width: 500px
+<figure>
+<img src="_static/addons006.png" width="500">
+<figcaption>
 
-   Statistics showing disk usage
+Example addons explaining how to create an addon for **RPi-Monitor**
 
------
-
-.. figure:: _static/logo.png
-   :align: center
-   :width: 500px
-
-   Official Logo
+</figcaption>
+</figure>
 
 -----
 
-.. figure:: _static/multipages001.png
-   :align: center
-   :width: 500px
+<figure>
+<img src="_static/advancedservices001.png" width="500">
+<figcaption>
 
-   Multiple status pages
+Advanced services example showing how to use Labels
 
------
-
-.. figure:: _static/multipages002.png
-   :align: center
-   :width: 500px
-
-   Multiple statistics pages
+</figcaption>
+</figure>
 
 -----
 
-.. figure:: _static/sensor002.png
-   :align: center
-   :width: 500px
+<figure>
+<img src="_static/features001.png" width="500">
+<figcaption>
 
-   Statistics with dual axis
+Status page
+
+</figcaption>
+</figure>
 
 -----
 
-.. figure:: _static/tor001.png
-   :align: center
-   :width: 500px
+<figure>
+<img src="_static/friends001.png" width="500">
+<figcaption>
 
-   Example of usage: tor-info
+Status page showing friends
 
+</figcaption>
+</figure>
+
+-----
+
+<figure>
+<img src="_static/hdd003.png" width="500">
+<figcaption>
+
+Statistics showing disk usage
+
+</figcaption>
+</figure>
+
+-----
+
+<figure>
+<img src="_static/logo.png" width="500">
+<figcaption>
+
+Official Logo
+
+</figcaption>
+</figure>
+
+-----
+
+<figure>
+<img src="_static/multipages001.png" width="500">
+<figcaption>
+
+Multiple status pages
+
+</figcaption>
+</figure>
+
+-----
+
+<figure>
+<img src="_static/multipages002.png" width="500">
+<figcaption>
+
+Multiple statistics pages
+
+</figcaption>
+</figure>
+
+-----
+
+<figure>
+<img src="_static/sensor002.png" width="500">
+<figcaption>
+
+Statistics with dual axis
+
+</figcaption>
+</figure>
+
+-----
+
+<figure>
+<img src="_static/tor001.png" width="500">
+<figcaption>
+
+Example of usage: tor-info
+
+</figcaption>
+</figure>
