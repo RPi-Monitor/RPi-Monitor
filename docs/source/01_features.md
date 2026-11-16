@@ -1,82 +1,77 @@
-# Keys features of RPi-Monitor
+# Key features of RPi-Monitor
 
-At the beginning **RPi-Monitor** was designed to run on **Raspberry Pi**. This
-is explaining the name of this software. In reality **RPi-Monitor** can run 
-on every computers running `perl`.
+At the beginning, **RPi-Monitor** was designed to run on a **Raspberry Pi**.
+This explains the name of the software. In reality, **RPi-Monitor** can run on
+any computer running `perl`.
 
-<figure>
-<img src="_static/logo.svg" width="500">
-</figure>
+Since the beginning, **RPi-Monitor** has been designed for embedded devices, and
+performance remains at the core of the development strategy.
 
-Since the beginning **RPi-Monitor** as been designed for embedded devices and
-performances is the core of development strategy. 
+The software is divided into two main parts:
 
-The software is divided into two main part:
-
-* A lightweight daemon running on the device and gathering data
-* A powerfull WEB application running in browser in charge of data rendering
+* A lightweight daemon running on the device and collecting data
+* A powerful web application running in the browser and responsible for rendering the data
 
 <figure>
 <img src="_static/features001.png" width="500">
 </figure>
 
 ## Collecting metrics
-  `rpimonitord` is a daemon wich periodically gather, process and store metrics.
-  In **RPi-Monitor** metrics are named **KPI** for **K**ey **P**erformance **I**ndicator.
+`rpimonitord` is a daemon that periodically gathers, processes, and stores metrics.
+In **RPi-Monitor**, metrics are named **KPI** for **K**ey **P**erformance **I**ndicator.
 
 ## Storing metrics
-  Metrics are stored into a [Round Robin Database](https://oss.oetiker.ch/rrdtool/) (RRD). 
-  This ensure a fixed size for the data storage and keep by default data over 1 year.
+Metrics are stored in a [Round Robin Database](https://oss.oetiker.ch/rrdtool/) (RRD).
+This ensures a fixed size for the data storage and keeps data for one year by default.
 
 ## Presenting collected metrics
-  **RPi-Monitor** embed a web server designed to present collected metrics.
-  Instantaneous data are presented in the status page. Metrics stored in RRD
-  are presented in statistics pages. 
-  
-  The web interface allow user to reorganise status information by drag'n drop. 
-  
-  Statistics page allow to zoom over graph to see details of the mertics.
+**RPi-Monitor** embeds a web server designed to present collected metrics.
+Instantaneous data are shown on the status page, while metrics stored in the RRD are
+shown on the statistics pages.
 
-  Embedded web server can be disable and pages can be served by an external web server.
+The web interface allows users to reorganize status information by drag-and-drop.
+
+Statistics pages allow zooming in on graphs to inspect metric details.
+
+The embedded web server can be disabled, and pages can be served by an external web server.
 
 ## Configurable
-  In **RPi-Monitor** everything is configurable:
+In **RPi-Monitor**, everything is configurable:
 
-  - Define what metrics to extract and how to extract them
-  - Define how to store metrics
-  - Define how to present and share metrics and statistics
-  - Define how to detect an alert and what to do when alert appears or disappears
-  - Define ... what you want to do with **RPi-Monitor**
-  
+- Define which metrics to extract and how to extract them
+- Define how to store metrics
+- Define how to present and share metrics and statistics
+- Define how to detect alerts and what to do when they appear or disappear
+- Define ... anything you want to do with **RPi-Monitor**
+
 ## Processing metrics and raising alerts
-  **RPi-Monitor** embed an alert engine fully configurable and able to determine
-  if metrics are out of expected range and raise alerts.
-  
-  When an alert is detected, **RPi-Monitor** can execute an action. For example, sending email or SMS.
+**RPi-Monitor** embeds a fully configurable alert engine able to determine whether
+metrics are outside expected ranges and raise alerts.
 
-  Definition of critera of alert detection as well as action to perform when alert
-  is detected are fully configurable.
+When an alert is detected, **RPi-Monitor** can execute an action, for example sending an email or SMS.
 
-## Read only mode
-  If writing data on disk/eMMC/SSD/SDCard/... is not possible, **RPi-Monitor** 
-  can be executed in **read-only** mode. 
-  
-  Metrics can be retrived either by web interface in json format or through SNMP. 
+The criteria for alert detection and the action to perform when an alert is triggered are fully configurable.
+
+## Read-only mode
+If writing data to disk, eMMC, SSD, SD card, and so on is not possible,
+**RPi-Monitor** can be run in **read-only** mode.
+
+Metrics can be retrieved either through the web interface in JSON format or through SNMP.
 
 ## Sharing metrics
-  Metrics collected can be downloaded in json format (using the embedded web 
-  server), read on disk or remotely accessed through SNMP.
+Metrics can be downloaded in JSON format (using the embedded web server), read from disk,
+or accessed remotely through SNMP.
 
 ## Extending the capabilities
-  **RPi-Monitor** is extensible. It provides addons allowing customisation of
-  the interface. For example: [Shellinabox](https://github.com/shellinabox/shellinabox) or 
-  [Hawkeye](https://github.com/ipartola/hawkeye).
+**RPi-Monitor** is extensible. It provides addons that allow customization of the
+interface. For example: [Shellinabox](https://github.com/shellinabox/shellinabox) or
+[Hawkeye](https://github.com/ipartola/hawkeye).
 
-  **RPi-Monitor-Peeble** allows to see monitoring status on [Peeble](https://www.pebble.com/) smart watch.
-  
-  **RPi-Monitor** is also available for [Docker](https://www.docker.com/) and for embedded devices created
-  with [Yocto Project](https://www.yoctoproject.org/)
+**RPi-Monitor-Peeble** allows you to view the monitoring status on a [Pebble](https://www.pebble.com/) smart watch.
+
+**RPi-Monitor** is also available for [Docker](https://www.docker.com/) and for embedded devices created
+with the [Yocto Project](https://www.yoctoproject.org/).
 
 ## Screenshots
 
-  See [screenshots](02_screenshots.md) on dedicated page.
+See the [screenshots](02_screenshots.md) page for more details.

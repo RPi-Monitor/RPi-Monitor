@@ -1,27 +1,27 @@
-# Welcome to RPi-Monitor documentation !
+# Welcome to the RPi-Monitor documentation!
 
 <figure>
 <img src="_static/logo.png">
 </figure>
 
-**RPi-Monitor** is a software designed to monitor the metrics from GNU/Linux 
-system and connected peripherals. It store statistic into local Round Robin 
-Database and embed a web server allowing to display current status and statistics.
+**RPi-Monitor** is software designed to monitor metrics from GNU/Linux systems
+and connected peripherals. It stores statistics in a local Round Robin Database
+and embeds a web server to display the current status and historical graphs.
 
-This documentation is presenting the features provided by **RPi-Monitor** and
-explains how to install, configure and use it.
+This documentation presents the features provided by **RPi-Monitor** and
+explains how to install, configure, and use it.
 
 > **Work in progress**
 >
-> *Pages with the following ribbon are not yet validated and may contain not accurate information.*
+> *Pages with the following ribbon are not yet validated and may contain inaccurate information.*
 >
 > <figure>
 > <img src="_static/wip.png" width="150">
 > </figure>
 
-## Table of Content
+## Table of contents
 
-- [Keys features of RPi-Monitor](01_features.md)
+- [Key features of RPi-Monitor](01_features.md)
   - [Screenshots](02_screenshots.md)
 - [Getting started](10_index.md)
   - [Installation and upgrade](11_installation.md)
@@ -36,13 +36,13 @@ explains how to install, configure and use it.
   - [Addons configuration](25_addons.md)
   - [Alert configuration](26_alert.md)
   - [Configuration templates](27_configuration_templates.md)
-- [Usages](30_index.md)
+- [Usage](30_index.md)
   - [Configuration examples](31_configuration_examples.md)
   - [Configuration using sensors](32_sensors.md)
   - [RPi-Monitor-LCD](33_lcd.md)
   - [Authentication and secure access](34_autentication.md)
-  - [Non standard configuration](35_external.md)
-- [To go further](40_index.md)
+  - [Non-standard configuration](35_external.md)
+- [Go further](40_index.md)
   - [Contributing](41_contributing.md)
-  - [Authors and Licenses](42_license.md)
-  - [Release note](43_changelog.md)
+  - [Authors and licenses](42_license.md)
+  - [Release notes](43_changelog.md)

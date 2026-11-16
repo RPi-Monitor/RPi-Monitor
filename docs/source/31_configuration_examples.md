@@ -215,8 +215,8 @@ Here is the result:
 
 ## Use MRTG with RPi-Monitor in read-only mode
 
-In this section we will see how to configure **RPi-Monitor** in **read-only mode** and provide data over **SNMP**.
-We will use [MRTG](https://oss.oetiker.ch/mrtg/) to geather these information and create graphs.
+In this section, we will see how to configure **RPi-Monitor** in **read-only mode** and provide data over **SNMP**.
+We will use [MRTG](https://oss.oetiker.ch/mrtg/) to gather this information and create graphs.
 
 ### Install **MRTG** and **SNMP** tools
 

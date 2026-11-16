@@ -33,9 +33,9 @@ friend is identified by its `<id>` and is described by the 2 following
 parameters
 
 web.friends.\<id\>.title=\<display title\>
-: `<display title>` is the title printed into the drop down menu.
-  This parameter will be evaluated by the javascript command with the function `eval()` 
-  theirfore parameter should be valid javacript.
+: `<display title>` is the title printed in the drop-down menu.
+  This parameter is evaluated by the JavaScript command with the function `eval()`,
+  so it must be valid JavaScript.
 
 web.friends.\<id\>.link=\<link to RPi-Monitor\>
 : `<link to RPi-Monitor>` is the link to another RPi-Monitor running
@@ -71,9 +71,9 @@ Each page is identified by its `<page id>`.
 > **See also:** Example of implementation in [Multi-pages customisation example](27_configuration_templates.md#multiple-pages)
 
 web.status.\<page id\>.title=\<page title\>
-: `<page title>` title of the page displayed into the drop down menu in case of multiple pages.
-  This parameter will be evaluated by the javascript command with the function `eval()` 
-  theirfore parameter should be valid javacript.
+: `<page title>` is the title of the page displayed in the drop-down menu when multiple pages exist.
+  This parameter is evaluated by the JavaScript command with the function `eval()`,
+  so it must be valid JavaScript.
 
   > [!TIP]
   > You can use the function `LinkToGraph(page,graph,text)` direct link to graph.
@@ -99,8 +99,8 @@ web.status.\<page id\>.content.\<status id\>.line.\<line number\>=\<parameter\>
 
   This number has to be unique within the strip.
 
-  `<parameter>` is describing the content of the line. This parameter will be evaluated by the 
-  javascript command with the function `eval()` theirfore parameter should be valid javacript.
+  `<parameter>` describes the content of the line. This parameter is evaluated by the
+  JavaScript command with the function `eval()`, so it must be valid JavaScript.
 
   To have  clean rendering, **RPi-Monitor** web interface provides some functions 
   that could be used inside the parameter. The object `data` is also available 
@@ -196,9 +196,9 @@ It is possible to define multiple pages. Each page is identified by
 its `<page id>`.
 
 web.statistic.\<page id\>.title=\<page title\>
-: `<page title>` title of the page displayed into the drop down menu in
-  case of multiple pages. This parameter will be evaluated by the javascript
-  command with the function `eval()` theirfore parameter should be valid javacript.
+: `<page title>` is the title of the page displayed in the drop-down menu when
+  multiple pages exist. This parameter is evaluated by the JavaScript command
+  with the function `eval()`, so it must be valid JavaScript.
 
 The statistic page displays statistics graphs. The graphs are
 identified an unique `<statistic id>` and by the following parameters.
@@ -229,10 +229,10 @@ and `css` code installed in `/usr/share/rpimonitor/web/addons/`.
 
 Each addons is idendifier by an `id` and the following parameters:
 
-web.addons.\<id\>.title=\<title to be display\>
-: `<title to be display>` defines the text display in RPi-Monitor web interface.
-  This parameter will be evaluated by the javascript command with the function `eval()` 
-  theirfore parameter should be valid javacript.
+web.addons.\<id\>.title=\<title to display\>
+: `<title to display>` defines the text displayed in the RPi-Monitor web interface.
+  This parameter is evaluated by the JavaScript command with the function `eval()`,
+  so it must be valid JavaScript.
  
 web.addons.\<id\>.addons=\<addon name\>
 : `<addon name>` defines the addon to activate.

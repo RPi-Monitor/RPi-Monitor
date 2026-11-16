@@ -38,7 +38,7 @@ Here is the result:
 <img src="_static/header001.png" width="500">
 </figure>
 
-> **See also:** See defails in [Header definition](24_web.md#header-customisation)
+> **See also:** See details in [Header definition](24_web.md#header-customisation)
 
 ## Friends
 
