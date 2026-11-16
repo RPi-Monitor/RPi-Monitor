@@ -26,7 +26,7 @@ Actually, I'm using free token provided by Mistral-Vibe, Codex, Gemini and Curso
 
 # Overview
 
-<img src="docs/source/_static/logo.png" alt="RPi-Monitor logo" width="500">
+<img src="docs/user_manual/images/logo.png" alt="RPi-Monitor logo" width="500">
 
 **RPi-Monitor** is an application designed to perform real time monitoring Linux devices. It has initially been designed to run on a [Raspberry Pi](http://raspberrypi.org) B.
 
@@ -36,7 +36,7 @@ For details, refer to [key features of RPi-Monitor](https://rpi-monitor.github.i
 
 # Screenshots
 
-![MainPage](docs/source/_static/features002.png)
+![MainPage](docs/user_manual/images/features002.png)
 
 See [Screenshots](https://rpi-monitor.github.io/RPi-Monitor-docs/02_screenshots.html) chapter
 of documentation to see more screenshots.

@@ -3,7 +3,7 @@
 -----
 
 <figure>
-<img src="_static/addons001.png" width="500">
+<img src="images/addons001.png" width="500">
 <figcaption>
 
 Addons welcome page explaining how to use Addons
@@ -14,7 +14,7 @@ Addons welcome page explaining how to use Addons
 -----
 
 <figure>
-<img src="_static/addons002.png">
+<img src="images/addons002.png">
 <figcaption>
 
 Top3 addons Addons showing 3 processes using the most time of CPU and `rpimonitord` process cpu usage
@@ -25,7 +25,7 @@ Top3 addons Addons showing 3 processes using the most time of CPU and `rpimonito
 -----
 
 <figure>
-<img src="_static/addons003.png" width="500">
+<img src="images/addons003.png" width="500">
 <figcaption>
 
 Custom addon example explaining how to use custom addon
@@ -36,7 +36,7 @@ Custom addon example explaining how to use custom addon
 -----
 
 <figure>
-<img src="_static/addons006.png" width="500">
+<img src="images/addons006.png" width="500">
 <figcaption>
 
 Example addons explaining how to create an addon for **RPi-Monitor**
@@ -47,7 +47,7 @@ Example addons explaining how to create an addon for **RPi-Monitor**
 -----
 
 <figure>
-<img src="_static/advancedservices001.png" width="500">
+<img src="images/advancedservices001.png" width="500">
 <figcaption>
 
 Advanced services example showing how to use Labels
@@ -58,7 +58,7 @@ Advanced services example showing how to use Labels
 -----
 
 <figure>
-<img src="_static/features001.png" width="500">
+<img src="images/features001.png" width="500">
 <figcaption>
 
 Status page
@@ -69,7 +69,7 @@ Status page
 -----
 
 <figure>
-<img src="_static/friends001.png" width="500">
+<img src="images/friends001.png" width="500">
 <figcaption>
 
 Status page showing friends
@@ -80,7 +80,7 @@ Status page showing friends
 -----
 
 <figure>
-<img src="_static/hdd003.png" width="500">
+<img src="images/hdd003.png" width="500">
 <figcaption>
 
 Statistics showing disk usage
@@ -91,7 +91,7 @@ Statistics showing disk usage
 -----
 
 <figure>
-<img src="_static/logo.png" width="500">
+<img src="images/logo.png" width="500">
 <figcaption>
 
 Official Logo
@@ -102,7 +102,7 @@ Official Logo
 -----
 
 <figure>
-<img src="_static/multipages001.png" width="500">
+<img src="images/multipages001.png" width="500">
 <figcaption>
 
 Multiple status pages
@@ -113,7 +113,7 @@ Multiple status pages
 -----
 
 <figure>
-<img src="_static/multipages002.png" width="500">
+<img src="images/multipages002.png" width="500">
 <figcaption>
 
 Multiple statistics pages
@@ -124,7 +124,7 @@ Multiple statistics pages
 -----
 
 <figure>
-<img src="_static/sensor002.png" width="500">
+<img src="images/sensor002.png" width="500">
 <figcaption>
 
 Statistics with dual axis
@@ -135,7 +135,7 @@ Statistics with dual axis
 -----
 
 <figure>
-<img src="_static/tor001.png" width="500">
+<img src="images/tor001.png" width="500">
 <figcaption>
 
 Example of usage: tor-info

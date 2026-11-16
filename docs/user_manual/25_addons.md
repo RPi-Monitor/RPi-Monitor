@@ -12,7 +12,7 @@ with different parameters if the addon supports it, as shown below with the [cus
 The following sections show examples of addons and highlight the possibilities of this feature.
 
 <figure>
-<img src="_static/addons001.png" width="500">
+<img src="images/addons001.png" width="500">
 </figure>
 
 ## About Addon
@@ -30,7 +30,7 @@ include=/etc/rpimonitor/template/addons.conf
 Top3 shows how to use addons to add extra information to the status page.
 
 <figure>
-<img src="_static/addons002.png" width="400">
+<img src="images/addons002.png" width="400">
 </figure>
 
 This addon is designed to periodically generate HTML content. This content can be
@@ -62,7 +62,7 @@ help you customize **RPi-Monitor** to your needs. This addon implements an
 iframe that can display any other web page.
 
 <figure>
-<img src="_static/addons003.png" width="500">
+<img src="images/addons003.png" width="500">
 </figure>
 
 The custom addon can be configured with the following parameters:
@@ -133,7 +133,7 @@ The `url` parameter points to the Hawkeye web interface.
 If you want to develop your own addon, you can refer to the example addons to see how to implement one.
 
 <figure>
-<img src="_static/addons006.png" width="500">
+<img src="images/addons006.png" width="500">
 </figure>
 
 The example addon provides an HTML page, JavaScript, and CSS showing how an addon page can interact with **RPi-Monitor**.

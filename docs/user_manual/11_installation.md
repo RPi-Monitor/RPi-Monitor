@@ -55,21 +55,26 @@ prepared to run a version that may not be stable.
 
 ## Upgrade
 
-To upgrade an installation managed by this script, run the same command again.
-It selects the latest stable release, preserves configuration files, and
-restarts the service if needed. New templates are added without overwriting
-local configuration; if an installed template differs from the release copy,
-the new version is saved with a `.new` suffix. Use `--version VERSION` to
-select a particular release or `--force` to reinstall the current version.
-
-The daily package-status update is handled automatically. To refresh the
-upgradable-packages information immediately, run:
+For an installation managed by the unified installer, run the installation
+command again. It downloads and installs the latest stable release:
 
 ```bash
-sudo /usr/share/rpimonitor/scripts/updatePackagesStatus.pl
+curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash
 ```
 
-> [!NOTE]
-> `TARGET_DIR` can direct deployed files to an alternate root, for example
-> `sudo TARGET_DIR=/tmp/rpi-root bash ./install.sh --dry-run`. It does not
-> isolate host-level operations such as package management or systemd.
+The installer preserves the existing configuration and monitoring data. It
+adds missing templates without replacing local files; when a template differs
+from the release version, that version is saved alongside it with a `.new`
+suffix. The systemd service is restarted only if it is already running, so an
+administrator's disabled service remains disabled.
+
+To install a particular published release, add `--version VERSION` to the
+command. If that release is already installed, the installer exits without
+reinstalling it; add `--force` when a reinstall is needed.
+
+> [!IMPORTANT]
+> The installer cannot update the legacy Debian package installation. If
+> `rpimonitor` is still installed through APT, back up your configuration,
+> remove the package with `sudo apt remove rpimonitor`, then run the installer
+> command above. Removing the package keeps `/etc/rpimonitor`, which the
+> installer preserves.

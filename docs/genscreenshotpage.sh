@@ -5,10 +5,10 @@
 TARGET=02_screenshots.md
 
 
-cd source
+cd user_manual
 echo "# Screenshots" > ${TARGET}
 
-for IMAGE in $(ls _static/*.png)
+for IMAGE in $(ls images/*.png)
 do
     DESCRIPTION=$(exiftool ${IMAGE} | perl -ne '/Doc Description\s+:\s+(.*)/ and print $1' )
     if [ "" != "${DESCRIPTION}" ]

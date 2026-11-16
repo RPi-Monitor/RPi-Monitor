@@ -1,4 +1,4 @@
-<img class="wip-ribbon" src="_static/wip.png" alt="Work in progress">
+<img class="wip-ribbon" src="images/wip.png" alt="Work in progress">
 
 # Configuration using sensors
 
@@ -24,7 +24,7 @@ This electronic assembly is quite simple and will need:
 Plug them as described in the following schema:
 
 <figure>
-<img src="_static/sensor001.png" width="400">
+<img src="images/sensor001.png" width="400">
 <figcaption>
 
 Schema extracted from Adafruit but using GPIO #27 instead of GPIO #4
@@ -103,7 +103,7 @@ sudo systemctl restart rpimonitord
 You will see a new curve in Temperature graph as shown in the screenshot bellow:
 
 <figure>
-<img src="_static/sensor002.png" width="400">
+<img src="images/sensor002.png" width="400">
 <figcaption>
 
 Graph with 2 Y axis: °C in left axis and % humidity (fixed from 0% to 100%) 

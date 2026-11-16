@@ -12,7 +12,7 @@ PANDOC   = pandoc --standalone --from gfm+definition_lists --to man \
 # The pages have no NAME section (needed by whatis/apropos), so it is piped in first.
 define manpage
 	printf '# NAME\n\n$(1) - $(3)\n' | $(PANDOC) --metadata title=$(1) --metadata section=$(2) \
-	  - source/$(4).md --output $(MANDIR)/$(1).$(2)
+	  - user_manual/$(4).md --output $(MANDIR)/$(1).$(2)
 endef
 
 .PHONY: html

@@ -1,5 +1,5 @@
 #!/bin/bash
-for IMAGE in $(ls source/_static/*.png)
+for IMAGE in $(ls user_manual/images/*.png)
 do
     qiv ${IMAGE} &
     PID=$!

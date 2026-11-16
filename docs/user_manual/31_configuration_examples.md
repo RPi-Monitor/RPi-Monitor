@@ -1,4 +1,4 @@
-<img class="wip-ribbon" src="_static/wip.png" alt="Work in progress">
+<img class="wip-ribbon" src="images/wip.png" alt="Work in progress">
 
 # Configuration examples
 
@@ -44,7 +44,7 @@ web.status.1.content.1.line.1="WiFi Sent: <b>"+KMG(data.wifi_send)+"<i class='ic
 ```
 
 <figure>
-<img src="_static/wifi001.png">
+<img src="images/wifi001.png">
 </figure>
 
 ### Add statistics
@@ -120,7 +120,7 @@ Dynamic stat will be stored into a RRD File as GAUGE. Ref to RRDTool help for de
 Now we will add a status line for this disk whit the following icon:
 
 <figure>
-<img src="_static/hdd001.png">
+<img src="images/hdd001.png">
 </figure>
 
 This icons has to be installed into the img directory of **RPi-Monitor** which is 
@@ -158,7 +158,7 @@ sudo systemctl restart rpimonitord
 The result of the configuration is at the bottom of the following screenshot:
 
 <figure>
-<img src="_static/hdd002.png" width="500">
+<img src="images/hdd002.png" width="500">
 </figure>
 
 The status page is working, let's now add a graphic of the disk usage. 
@@ -197,7 +197,7 @@ Restart rpimonitor to activate the new graph.
 After waiting a little time to let the system extract data you will see this kind of graph.
 
 <figure>
-<img src="_static/hdd003.png" width="500">
+<img src="images/hdd003.png" width="500">
 </figure>
 
 ## Advanced service monitoring configuration
@@ -210,7 +210,7 @@ Here is an example of configuration proposed by Münir Ozan TOPCU:
 Here is the result:
 
 <figure>
-<img src="_static/advancedservices001.png">
+<img src="images/advancedservices001.png">
 </figure>
 
 ## Use MRTG with RPi-Monitor in read-only mode
@@ -318,5 +318,5 @@ Here is an example of configuration proposed by Luiz Kill: on [tor-info](https:/
 Here is the result:
 
 <figure>
-<img src="_static/tor001.png" width="500">
+<img src="images/tor001.png" width="500">
 </figure>

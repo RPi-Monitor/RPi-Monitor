@@ -1,7 +1,7 @@
 # Welcome to the RPi-Monitor documentation!
 
 <figure>
-<img src="_static/logo.png">
+<img src="images/logo.png">
 </figure>
 
 **RPi-Monitor** is software designed to monitor metrics from GNU/Linux systems
@@ -16,7 +16,7 @@ explains how to install, configure, and use it.
 > *Pages with the following ribbon are not yet validated and may contain inaccurate information.*
 >
 > <figure>
-> <img src="_static/wip.png" width="150">
+> <img src="images/wip.png" width="150">
 > </figure>
 
 ## Table of contents

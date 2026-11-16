@@ -35,7 +35,7 @@ The file `avatar.png` has been added into `/usr/share/rpimonitor/web/img/`.
 Here is the result:
 
 <figure>
-<img src="_static/header001.png" width="500">
+<img src="images/header001.png" width="500">
 </figure>
 
 > **See also:** See details in [Header definition](24_web.md#header-customisation)
@@ -49,7 +49,7 @@ will add a drop down list on the right of the top menu with a links to
 **RPi-Monitor** sitting on the other computer.
 
 <figure>
-<img src="_static/friends001.png" width="500">
+<img src="images/friends001.png" width="500">
 </figure>
 
 Each friend is identified by an `id` and is described by 2 parameters: `<title>` and `<link>`.
@@ -61,7 +61,7 @@ Here is an example of configuration : `/etc/rpimonitor/template/example.friends.
 ```
 
 <figure>
-<img src="_static/friends002.png">
+<img src="images/friends002.png">
 </figure>
 
 > **See also:** See details in [Friends definition](24_web.md#friends)
@@ -98,7 +98,7 @@ Other ports checking are using the same technic.
 Here is the result:
 
 <figure>
-<img src="_static/label001.png">
+<img src="images/label001.png">
 </figure>
 
 > **See also:** See details in [Badge and Label definition in status definition](24_web.md#status)
@@ -118,7 +118,7 @@ Here is an example of configuration : `/etc/rpimonitor/template/example.multipag
 The new page will be accessible by a drop down menu as shown in the screenshot bellow.
 
 <figure>
-<img src="_static/multipages001.png" width="500">
+<img src="images/multipages001.png" width="500">
 <figcaption>
 
 **RPi-Monitor** showing multiple status pages
@@ -127,7 +127,7 @@ The new page will be accessible by a drop down menu as shown in the screenshot b
 </figure>
 
 <figure>
-<img src="_static/multipages002.png" width="500">
+<img src="images/multipages002.png" width="500">
 <figcaption>
 
 **RPi-Monitor** showing multiple graph pages
@@ -149,7 +149,7 @@ Here is an example of configuration : `/etc/rpimonitor/template/example.progress
 Here is the result:
 
 <figure>
-<img src="_static/web001.png" width="400">
+<img src="images/web001.png" width="400">
 <figcaption>
 
 Show warning and critical and colors 
@@ -173,7 +173,7 @@ Here is an example of configuration : `/etc/rpimonitor/template/example.justgage
 Here is the result:
 
 <figure>
-<img src="_static/web002.png" width="400">
+<img src="images/web002.png" width="400">
 <figcaption>
 
 Show warning and critical and colors 
@@ -199,7 +199,7 @@ In this example, the row is alternativelly dosplayed and hide depending on minut
 Here is the result:
 
 <figure>
-<img src="_static/visibility001.png" width="400">
+<img src="images/visibility001.png" width="400">
 <figcaption>
 
 Show visibility feature
@@ -226,7 +226,7 @@ In this example is showing interval set tj 1, 3 and 7
 Here is the result:
 
 <figure>
-<img src="_static/interval001.png">
+<img src="images/interval001.png">
 </figure>
 
 > **See also:** See details in [Interval definition in status definition](24_web.md#status)
@@ -282,7 +282,7 @@ watch 'grep ".*" /tmp/test_alert.*'
 Open the status page and check the auto update option to see the example running in real time as shown bellow:
 
 <figure>
-<img src="_static/alertanimation001.gif">
+<img src="images/alertanimation001.gif">
 </figure>
 
 > **See also:** See details in [Alert definition in status definition](26_alert.md)

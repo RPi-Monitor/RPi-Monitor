@@ -12,7 +12,7 @@
 
 **RPi-Monitor**'s graphs are not clean and frequently drop down to zero, as in the screenshot below. How can I get a clean curve?
 : <figure>
-  <img src="_static/faq001.png" width="400">
+  <img src="images/faq001.png" width="400">
   </figure>
 
   **RPi-Monitor** periodically reads data from programs or files.

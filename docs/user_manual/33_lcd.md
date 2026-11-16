@@ -7,7 +7,7 @@ PCD8544 is a small and cheap LCD screen. We will see in this chapter how to use
 it and connect it to **RPi-Monitor**.
 
 <figure>
-<img src="_static/lcd001.png" width="200">
+<img src="images/lcd001.png" width="200">
 </figure>
 
 ## LCD connection
@@ -16,7 +16,7 @@ soldered together. Once done, it can be installed in the breadboard as shown
 in the drawing bellow:
 
 <figure>
-<img src="_static/lcd002.png" width="400">
+<img src="images/lcd002.png" width="400">
 <figcaption>
 
 Schema made with Fritzing (fritzing.org)
@@ -136,7 +136,7 @@ cd examples
 If installation works properly, you should see the following screen:
 
 <figure>
-<img src="_static/lcd003.png" width="250">
+<img src="images/lcd003.png" width="250">
 </figure>
 
 You can try to execute other examples to see what the library is capable to do with this LCD.
@@ -254,5 +254,5 @@ Copy this code into a file `rpimonitor-testlcd.py` the make this file
 executable `chmod +x rpimonitor-testlcd.py` then execute `./rpimonitor-testlcd.py` it to see:
 
 <figure>
-<img src="_static/lcd004.png" width="250">
+<img src="images/lcd004.png" width="250">
 </figure>

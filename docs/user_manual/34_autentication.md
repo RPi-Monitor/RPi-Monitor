@@ -1,4 +1,4 @@
-<img class="wip-ribbon" src="_static/wip.png" alt="Work in progress">
+<img class="wip-ribbon" src="images/wip.png" alt="Work in progress">
 
 # Authentication and secure access
 

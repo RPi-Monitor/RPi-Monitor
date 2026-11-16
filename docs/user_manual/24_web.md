@@ -61,7 +61,7 @@ web.page.pagetitle=\<page title\>
   the keyword `data` including the `data.hostname` available natively
 
   <figure>
-  <img src="_static/header001.png" width="500">
+  <img src="images/header001.png" width="500">
   </figure>
 
 ## Status
@@ -133,7 +133,7 @@ web.status.\<page id\>.content.\<status id\>.line.\<line number\>=\<parameter\>
       If warning value is higher than critical, progressbar color will be orange if percentage is lower than warning value and red if the percentage is lower than danger value.
 
       <figure>
-      <img src="_static/web001.png" width="500">
+      <img src="images/web001.png" width="500">
       </figure>
 
   - **JustGageBar(title, label,min, value, max, width, height, levelColors, warning, critical)**
@@ -150,7 +150,7 @@ web.status.\<page id\>.content.\<status id\>.line.\<line number\>=\<parameter\>
       + **critical**    : Critical level (in %) used to define color (default: 66)
 
       <figure>
-      <img src="_static/web002.png" width="500">
+      <img src="images/web002.png" width="500">
       </figure>
 
   - **Plural(value)**
@@ -171,7 +171,7 @@ web.status.\<page id\>.content.\<status id\>.line.\<line number\>=\<parameter\>
       * **level**   : 'default' (grey), 'primary' (blue label/grey badge), 'success' (green), 'info' (cyan), 'warning' (orange), 'danger' (red)
 
       <figure>
-      <img src="_static/web003.png" width="500">
+      <img src="images/web003.png" width="500">
       </figure>
 
   - **InsertHTML(url)**
@@ -187,7 +187,7 @@ web.status.\<page id\>.content.\<status id\>.line.\<line number\>=\<parameter\>
       * **text**  : text of the link
 
       <figure>
-      <img src="_static/web004.png" width="500">
+      <img src="images/web004.png" width="500">
       </figure>
 
 ## Statistics

@@ -13,7 +13,7 @@ The software is divided into two main parts:
 * A powerful web application running in the browser and responsible for rendering the data
 
 <figure>
-<img src="_static/features001.png" width="500">
+<img src="images/features001.png" width="500">
 </figure>
 
 ## Collecting metrics

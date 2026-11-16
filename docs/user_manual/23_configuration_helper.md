@@ -8,28 +8,28 @@ First execute the following command:
 
 `rpimonitord -i`
 
-<img src="_static/helper001.png">
+<img src="images/helper001.png">
 
 Press `Enter`
 
-<img src="_static/helper002.png">
+<img src="images/helper002.png">
 
 Enter : `df -t ntfs`
 
-<img src="_static/helper003.png">
+<img src="images/helper003.png">
 
 **RPi-Monitor** will tell you how it will process the source.
 In our example, it will execute the command `df`.
 If it is correct, press `Enter`, if not, enter `no` ( or `No` or `n` or `N` ) 
 to go back to previous screen.
 
-<img src="_static/helper004.png">
+<img src="images/helper004.png">
 
 RPi-Monitor show you the ouput of the command as defined as source. If the 
 output is the one expected press `Enter`, if not, **RPi-Monitor** will ask you 
 to define the source again.
 
-<img src="_static/helper005.png">
+<img src="images/helper005.png">
 
 By default the regulare expression is `(.*)`. This will return all the 
 data given by the source.
@@ -38,37 +38,37 @@ extracting the available space of our ntfs drive step by step.
 
 Step one, hit `Enter` to see what is given by the source by default.
 
-<img src="_static/helper006.png">
+<img src="images/helper006.png">
 
 The output is not the one expected hit `Enter` to define a new Regular expression.
 The data is located after `sda1`. Lets enter the following regular 
 expression: `sda1(.*)` to get what is after `sda1`.
 
-<img src="_static/helper007.png">
+<img src="images/helper007.png">
 
 The output is not the one expected yet hit `Enter` to define a new regular expression.
 The data is located after `sda1` after some spaces `\s+`, some numbers `\d+`, 
 some spaces `\s+`, some numbers `\d+`, some spaces` \s+` and is composed of numbers `(\d+)`.
 Enter then the following regulare expression: `sda1\s+\d+\s+\d+\s+(\d+)`
 
-<img src="_static/helper008.png">
+<img src="images/helper008.png">
 
 The result is now the one expected , enter `Yes` ( or `yes` or `Y` or `y` )
 
-<img src="_static/helper009.png">
+<img src="images/helper009.png">
 
 We want the value in `MB` while is it given in `kB`. We then need to divide it by `1024`.
 The formula is then: `$1/1024`
 
-<img src="_static/helper010.png">
+<img src="images/helper010.png">
 
 This is the expected value, enter `yes`
 
-<img src="_static/helper011.png">
+<img src="images/helper011.png">
 
 The value extracted is variable so `dynamic` so enter `No`.
 
-<img src="_static/helper012.png">
+<img src="images/helper012.png">
 
 **RPi-Monitor** gives you the template of configuration. You now have to copy it 
 into an existing configuration file or add a new file in
