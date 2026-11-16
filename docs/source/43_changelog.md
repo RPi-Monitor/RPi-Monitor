@@ -3,8 +3,10 @@
 # Release note
 
 ## v2.13.2
-  * Fix temperature, voltage, processor, and `/boot` metrics on Raspberry Pi OS Bookworm
   * Fix an idle web client blocking the embedded server from handling other requests
+
+## v2.13.1
+  * Fix temperature, voltage, processor, and `/boot` metrics on Raspberry Pi OS Bookworm
 
 ## v2.13
 
