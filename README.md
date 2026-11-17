@@ -26,6 +26,8 @@ Actually, I'm using free token provided by Mistral-Vibe, Codex, Gemini and Curso
 
 # Overview
 
+<img src="docs/user_manual/images/logo.png" alt="RPi-Monitor logo" width="500">
+
 **RPi-Monitor** is an application designed to perform real time monitoring Linux devices. It has initially been designed to run on a [Raspberry Pi](http://raspberrypi.org) B.
 
 **RPi-Monitor** provides a lot of feature such as **Embedded Web server**, **Alert messaging**, **SNMP integration**...
@@ -34,7 +36,7 @@ For details, refer to [key features of RPi-Monitor](https://rpi-monitor.github.i
 
 # Screenshots
 
-![MainPage](docs/source/_static/features002.png)
+![MainPage](docs/user_manual/images/features002.png)
 
 See [Screenshots](https://rpi-monitor.github.io/RPi-Monitor-docs/02_screenshots.html) chapter
 of documentation to see more screenshots.
@@ -82,7 +84,7 @@ curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/instal
 | ------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `-h`, `--help`      | Display the available options and exit.                                                                      |
 | `-y`, `--yes`       | Automatically confirm the operation. Required when running without an interactive terminal.                  |
-| `--version VERSION` | Install a specific published release, for example `--version 2.14`. The optional leading `v` is accepted.    |
+| `--version VERSION` | Install a specific published release, for example `--version 2.13.2`. The optional leading `v` is accepted.    |
 | `--pre-release`     | Select the newest published release, including pre-releases. Pre-releases may not be stable.                 |
 | `--force`           | Force installation or reinstallation even if the installed version is already up to date.                    |
 | `--dry-run`         | Simulate the installation or update without applying the system changes. Root privileges are still required. |
@@ -99,7 +101,7 @@ curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/instal
 **Install a specific release:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash -s -- --version 2.14
+curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash -s -- --version 2.13.2
 ```
 
 **Install the newest release, including pre-releases:**
@@ -135,7 +137,7 @@ curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/instal
 Options can be combined. For example, to install a specific version automatically without managing the service:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash -s -- --version 2.14 --yes --no-service
+curl -fsSL https://raw.githubusercontent.com/RPi-Monitor/RPi-Monitor/main/install.sh | sudo bash -s -- --version 2.13.2 --yes --no-service
 ```
 
 ### Custom deployment root
@@ -165,7 +167,7 @@ Frequently Asked Question find answer into the [FAQ](https://rpi-monitor.github.
 
 If you want to participate and propose a pull request, refer to [contributing](https://rpi-monitor.github.io/RPi-Monitor-docs/41_contributing.html) chapter of documentation.
 
-**Note**: Pull request perfomed on **develop** branch will be integrated as soon as possible. Pull request perform on master branche may only be integrated when a new version is published (or not may not be integrated at all...)
+**Note**: Please target pull requests at **develop**. The **main** branch tracks the current release line.
 
 # License
 

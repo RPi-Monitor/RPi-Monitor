@@ -1,0 +1,20 @@
+/* Ribbon of pages not yet validated, same placement as the former Sphinx theme. */
+.wip-ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 300px;
+    z-index: 102;           /* above #mdbook-menu-bar (101) */
+    pointer-events: none;   /* menu icons under the ribbon stay clickable */
+}
+
+/* Below mdBook's own 620px breakpoint the full ribbon hides the page title. */
+@media only screen and (max-width: 620px) {
+    .wip-ribbon {
+        height: 150px;
+    }
+}
+
+figure {
+    text-align: center;
+}
