@@ -442,3 +442,113 @@ fn alert_cancelcommand_runs_after_trigger_clears() {
         "daemon did not stop after SIGTERM"
     );
 }
+
+#[test]
+fn alert_command_timeout_does_not_stop_daemon_processing() {
+    use std::net::TcpListener;
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = TempDir::new("rpimonitor-e2e-alert-timeout");
+    let webroot = dir.path().join("web");
+    let datastore = dir.path().join("data");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(datastore.join("stat")).expect("create datastore/stat");
+
+    let runs = dir.path().join("source-runs");
+    let source = dir.path().join("metric-source");
+    fs::write(
+        &source,
+        format!(
+            "#!/bin/sh\n\
+             count=0\n\
+             if [ -f '{}' ]; then count=$(cat '{}'); fi\n\
+             count=$((count + 1))\n\
+             printf '%s\\n' \"$count\" > '{}'\n\
+             printf '95\\n'\n",
+            runs.display(),
+            runs.display(),
+            runs.display(),
+        ),
+    )
+    .expect("write repeated metric source");
+    let mut permissions = fs::metadata(&source)
+        .expect("read source permissions")
+        .permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(&source, permissions).expect("make source executable");
+
+    let pid = std::process::id();
+    let sharedmemkey = 900_000 + (pid % 100_000);
+    let probe = TcpListener::bind(("127.0.0.1", 0)).expect("reserve ephemeral port");
+    let port = probe.local_addr().expect("read ephemeral port").port();
+    drop(probe);
+    let config = write_config(
+        dir.path(),
+        "alert-timeout.conf",
+        &format!(
+            "daemon.addr=127.0.0.1\n\
+             daemon.port={port}\n\
+             daemon.delay=1\n\
+             daemon.timeout=1\n\
+             daemon.datastore={}\n\
+             daemon.webroot={}\n\
+             daemon.sharedmemkey={sharedmemkey}\n\
+             dynamic.1.name=disk_space\n\
+             dynamic.1.source={}\n\
+             dynamic.1.regexp=(\\d+)\n\
+             dynamic.1.interval=1\n\
+             alert.disk_full.active=1\n\
+             alert.disk_full.trigger=data.disk_space > 90\n\
+             alert.disk_full.maxalertduration=0\n\
+             alert.disk_full.cancelvalidation=60\n\
+             alert.disk_full.resendperiod=60\n\
+             alert.disk_full.raisecommand=/bin/sleep 10\n",
+            datastore.display(),
+            webroot.display(),
+            source.display(),
+        ),
+    );
+    let pid_file = dir.path().join("rpimonitor-alert-timeout.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let deadline = Instant::now() + Duration::from_secs(12);
+    loop {
+        let count = fs::read_to_string(&runs)
+            .ok()
+            .and_then(|value| value.trim().parse::<u32>().ok())
+            .unwrap_or_default();
+        if count >= 3 {
+            break;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "daemon did not resume metric processing after alert command timeout; \
+             source runs={count}; stderr={:?}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        thread::sleep(Duration::from_millis(100));
+    }
+
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop after SIGTERM"
+    );
+}
