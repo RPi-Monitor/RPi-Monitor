@@ -841,7 +841,7 @@ fn web_server_serves_existing_static_files_from_webroot() {
         directory.path(),
         "http-file.conf",
         &format!(
-            "daemon.addr=127.0.0.1\ndaemon.port={port}\ndaemon.noserver=0\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.timeout=5\ndaemon.datastore={}\ndaemon.webroot={}\nweb.status.1.title=System Status\nweb.statistics.1.title=Trend Statistics\n",
+            "daemon.addr=127.0.0.1\ndaemon.port={port}\ndaemon.noserver=0\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.timeout=5\ndaemon.datastore={}\ndaemon.webroot={}\nweb.status.1.title=System Status\nweb.statistics.1.title=Trend Statistics\ndynamic.1.name=served_metric\ndynamic.1.source=/bin/echo 42\ndynamic.1.regexp=(\\d+)\ndynamic.1.rrd=GAUGE\ndynamic.1.interval=1\n",
             datastore.display(),
             webroot.display()
         ),
@@ -937,6 +937,24 @@ fn web_server_serves_existing_static_files_from_webroot() {
     assert!(
         rrd_response[header_end + 4..].starts_with(b"RRD"),
         "datastore RRD endpoint should return the RRD file bytes; response={rrd_text:?}"
+    );
+
+    let dynamic_rrd_response = get("/stat/served_metric.rrd");
+    let dynamic_rrd_text = String::from_utf8_lossy(&dynamic_rrd_response);
+    assert!(
+        dynamic_rrd_text.starts_with("HTTP/1.1 200")
+            || dynamic_rrd_text.starts_with("HTTP/1.0 200"),
+        "configured dynamic RRD should be included in the server paths; \
+         response={dynamic_rrd_text:?}"
+    );
+    let header_end = dynamic_rrd_response
+        .windows(4)
+        .position(|window| window == b"\r\n\r\n")
+        .expect("HTTP response should contain a header/body separator");
+    assert!(
+        dynamic_rrd_response[header_end + 4..].starts_with(b"RRD"),
+        "configured dynamic RRD endpoint should return an RRD file; \
+         response={dynamic_rrd_text:?}"
     );
 
     let missing_rrd_response = get("/stat/missing.rrd");
