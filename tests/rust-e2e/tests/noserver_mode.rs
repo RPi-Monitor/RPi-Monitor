@@ -822,6 +822,8 @@ fn web_server_serves_existing_static_files_from_webroot() {
     let datastore = directory.path().join("data");
     fs::create_dir_all(&webroot).expect("create webroot");
     fs::create_dir_all(datastore.join("stat")).expect("create RRD stat directory");
+    let status_marker = b"rpimonitor-status-page-e2e";
+    fs::write(webroot.join("status.html"), status_marker).expect("write status page fixture");
     let marker = b"rpimonitor-static-file-e2e";
     fs::write(webroot.join("favicon.ico"), marker).expect("write fixture file");
     let addon = webroot.join("addons").join("sample");
@@ -886,6 +888,19 @@ fn web_server_serves_existing_static_files_from_webroot() {
             }
         }
     };
+
+    let root_response = get("/");
+    let root_text = String::from_utf8_lossy(&root_response);
+    assert!(
+        root_text.starts_with("HTTP/1.1 200") || root_text.starts_with("HTTP/1.0 200"),
+        "root page should return HTTP 200; response={root_text:?}"
+    );
+    assert!(
+        root_response
+            .windows(status_marker.len())
+            .any(|window| window == status_marker),
+        "root page should serve status.html; response={root_text:?}"
+    );
 
     let favicon_response = get("/favicon.ico");
     let favicon_text = String::from_utf8_lossy(&favicon_response);
