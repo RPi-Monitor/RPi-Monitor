@@ -828,6 +828,10 @@ fn web_server_serves_existing_static_files_from_webroot() {
     fs::create_dir_all(&addon).expect("create addon directory");
     let addon_marker = b"rpimonitor-addon-file-e2e";
     fs::write(addon.join("widget.js"), addon_marker).expect("write addon fixture");
+    let image_dir = webroot.join("img");
+    fs::create_dir_all(&image_dir).expect("create image directory");
+    let image_marker = b"rpimonitor-image-file-e2e";
+    fs::write(image_dir.join("custom.png"), image_marker).expect("write image fixture");
 
     let probe = TcpListener::bind(("127.0.0.1", 0)).expect("reserve an ephemeral port");
     let port = probe.local_addr().expect("read ephemeral port").port();
@@ -905,6 +909,19 @@ fn web_server_serves_existing_static_files_from_webroot() {
             .windows(addon_marker.len())
             .any(|window| window == addon_marker),
         "addon endpoint should return the addon file bytes; response={addon_text:?}"
+    );
+
+    let image_response = get("/img/custom.png");
+    let image_text = String::from_utf8_lossy(&image_response);
+    assert!(
+        image_text.starts_with("HTTP/1.1 200") || image_text.starts_with("HTTP/1.0 200"),
+        "webroot PNG should return HTTP 200; response={image_text:?}"
+    );
+    assert!(
+        image_response
+            .windows(image_marker.len())
+            .any(|window| window == image_marker),
+        "webroot image endpoint should return the image file bytes; response={image_text:?}"
     );
 
     let rrd_response = get("/stat/empty.rrd");
