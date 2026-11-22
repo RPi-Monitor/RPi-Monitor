@@ -22,13 +22,24 @@ impl BackgroundDaemon {
     }
 
     fn stop_and_wait(&self, timeout: Duration) -> bool {
-        self.stop();
+        self.stop_and_wait_with_signal("TERM", timeout)
+    }
+
+    fn interrupt_and_wait(&self, timeout: Duration) -> bool {
+        self.stop_and_wait_with_signal("INT", timeout)
+    }
+
+    fn stop_and_wait_with_signal(&self, signal: &str, timeout: Duration) -> bool {
         let Ok(contents) = fs::read_to_string(&self.pid_file) else {
             return false;
         };
         let pids = contents.split_whitespace().collect::<Vec<_>>();
         if pids.is_empty() {
             return false;
+        }
+        let signal = format!("-{signal}");
+        for pid in &pids {
+            let _ = Command::new("kill").arg(&signal).arg(pid).status();
         }
 
         let deadline = Instant::now() + timeout;
@@ -881,5 +892,94 @@ fn web_server_serves_existing_static_file_from_webroot() {
     assert!(
         daemon.stop_and_wait(Duration::from_secs(5)),
         "daemon processes did not stop after SIGTERM"
+    );
+}
+
+#[test]
+fn dynamic_metric_inherits_default_interval_at_runtime() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = TempDir::new("rpimonitor-e2e-dynamic-interval");
+    let webroot = directory.path().join("web");
+    let datastore = directory.path().join("data");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(datastore.join("stat")).expect("create RRD stat directory");
+
+    let runs = directory.path().join("runs");
+    let source = directory.path().join("metric-source");
+    fs::write(
+        &source,
+        format!(
+            "#!/bin/sh\nprintf '%s\\n' \"$(/bin/date +%s)\" >> '{}'\nprintf '42\\n'\n",
+            runs.display()
+        ),
+    )
+    .expect("write metric source");
+    let mut permissions = fs::metadata(&source)
+        .expect("read metric source permissions")
+        .permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(&source, permissions).expect("make metric source executable");
+
+    let config = write_config(
+        directory.path(),
+        "dynamic-interval.conf",
+        &format!(
+            "daemon.noserver=1\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.timeout=5\ndaemon.defaultinterval=3\ndaemon.datastore={}\ndaemon.webroot={}\ndynamic.1.source={}\ndynamic.1.regexp=(\\d+)\ndynamic.1.name=interval_metric\ndynamic.1.default=0\n",
+            datastore.display(),
+            webroot.display(),
+            source.display()
+        ),
+    );
+    let pid_file = directory.path().join("rpimonitor-dynamic-interval.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        directory.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stdout={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(
+        wait_for_file(&runs, Duration::from_secs(8)),
+        "dynamic source was never run; launch stderr={:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let deadline = Instant::now() + Duration::from_secs(8);
+    let run_times = loop {
+        let run_times = fs::read_to_string(&runs)
+            .expect("read metric source invocation log")
+            .lines()
+            .map(|line| line.parse::<u64>().expect("parse invocation timestamp"))
+            .collect::<Vec<_>>();
+        if run_times.len() >= 2 {
+            break run_times;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "dynamic source did not run a second time at inherited interval 3"
+        );
+        thread::sleep(Duration::from_millis(50));
+    };
+
+    assert!(
+        run_times[1] - run_times[0] >= 2,
+        "dynamic source ran twice too soon for its configured 3-second interval"
+    );
+    assert!(
+        daemon.interrupt_and_wait(Duration::from_secs(5)),
+        "daemon processes did not stop after SIGINT"
     );
 }
