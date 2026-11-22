@@ -1,8 +1,9 @@
 use std::env;
 use std::ffi::OsString;
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::{Command, Output, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const BINARY_RELATIVE_PATH: &str = "src/usr/bin/rpimonitord";
@@ -56,7 +57,7 @@ pub fn write_config(directory: &Path, name: &str, content: &str) -> PathBuf {
 /// Run rpimonitord with isolated environment settings.
 /// If PERL_COVERAGE=1, launch it through Devel::Cover as the Python harness does.
 /// PERL_COVERAGE_DB overrides the coverage database path.
-pub fn run(args: &[OsString], working_dir: &Path) -> Output {
+fn command(args: &[OsString], working_dir: &Path) -> Command {
     let root = repository_root();
     let binary = binary_path();
     assert!(
@@ -98,6 +99,28 @@ pub fn run(args: &[OsString], working_dir: &Path) -> Output {
         .env("LANGUAGE", "C")
         .env("LANG", "C")
         .env("LC_CTYPE", "C");
+    command
+}
 
-    command.output().expect("launch rpimonitord")
+pub fn run(args: &[OsString], working_dir: &Path) -> Output {
+    command(args, working_dir)
+        .output()
+        .expect("launch rpimonitord")
+}
+
+/// Run rpimonitord with scripted standard input and isolated environment settings.
+pub fn run_with_stdin(args: &[OsString], working_dir: &Path, input: &[u8]) -> Output {
+    let mut child = command(args, working_dir)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("launch rpimonitord");
+    child
+        .stdin
+        .take()
+        .expect("open rpimonitord stdin")
+        .write_all(input)
+        .expect("write scripted stdin");
+    child.wait_with_output().expect("wait for rpimonitord")
 }
