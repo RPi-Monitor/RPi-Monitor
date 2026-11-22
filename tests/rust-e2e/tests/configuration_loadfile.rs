@@ -239,6 +239,35 @@ fn missing_configuration_file_reports_an_error() {
 }
 
 #[test]
+fn addon_without_title_is_omitted_from_the_menu() {
+    let directory = TempDir::new("rpimonitor-loadfile-addon-without-title");
+    let config = write_config(
+        directory.path(),
+        "addon-without-title.conf",
+        "web.status.1.content=Status body\nweb.addons.1.content=Addon body\n",
+    );
+
+    let output = show_configuration(&directory, &[config.to_str().expect("UTF-8 config path")]);
+
+    assert!(
+        output.contains("'content' => 'Addon body'"),
+        "configured add-on content should be loaded: {output}"
+    );
+    let menu_start = output
+        .find("'menu' => {")
+        .expect("menu should be generated");
+    let menu_end = output[menu_start..]
+        .find("\n    }")
+        .map(|offset| menu_start + offset)
+        .expect("menu should be closed in the configuration dump");
+    let menu = &output[menu_start..menu_end];
+    assert!(
+        !menu.contains("'addons' =>"),
+        "an add-on without a title should not be listed in the menu: {menu}"
+    );
+}
+
+#[test]
 fn nested_status_fields_and_dynamic_regex_are_preserved() {
     let directory = TempDir::new("rpimonitor-loadfile-nested");
     let config = write_config(
