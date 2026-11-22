@@ -557,3 +557,82 @@ fn alert_command_timeout_does_not_stop_daemon_processing() {
         "daemon did not stop after SIGTERM"
     );
 }
+
+#[test]
+fn alert_raisecommand_repeats_after_resend_period() {
+    use std::net::TcpListener;
+
+    let dir = TempDir::new("rpimonitor-e2e-alert-resend");
+    let webroot = dir.path().join("web");
+    let datastore = dir.path().join("data");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(datastore.join("stat")).expect("create datastore/stat");
+
+    let alert_log = dir.path().join("alert.log");
+    let pid = std::process::id();
+    let sharedmemkey = 1_000_000 + (pid % 100_000);
+    let probe = TcpListener::bind(("127.0.0.1", 0)).expect("reserve ephemeral port");
+    let port = probe.local_addr().expect("read port").port();
+    drop(probe);
+
+    let config = write_config(
+        dir.path(),
+        "alert-resend.conf",
+        &format!(
+            "daemon.addr=127.0.0.1\n\
+             daemon.port={port}\n\
+             daemon.delay=1\n\
+             daemon.datastore={}\n\
+             daemon.webroot={}\n\
+             daemon.sharedmemkey={sharedmemkey}\n\
+             dynamic.1.name=disk_space\n\
+             dynamic.1.source=/bin/echo 95\n\
+             dynamic.1.regexp=(\\d+)\n\
+             dynamic.1.interval=1\n\
+             alert.disk_full.active=1\n\
+             alert.disk_full.trigger=data.disk_space > 90\n\
+             alert.disk_full.maxalertduration=0\n\
+             alert.disk_full.cancelvalidation=60\n\
+             alert.disk_full.resendperiod=2\n\
+             alert.disk_full.raisecommand=/bin/echo raise >> {}\n\
+             alert.disk_full.cancelcommand=/bin/echo cancel >> {}\n",
+            datastore.display(),
+            webroot.display(),
+            alert_log.display(),
+            alert_log.display(),
+        ),
+    );
+    let pid_file = dir.path().join("rpimonitor-alert-resend.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let content = wait_for_file_content(&alert_log, "raise\nraise", Duration::from_secs(12));
+    assert!(
+        content.is_some(),
+        "raisecommand did not repeat after resendperiod; alert log={alert_log:?}; \
+         daemon stderr={:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop after SIGTERM"
+    );
+}
