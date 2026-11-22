@@ -51,6 +51,10 @@ name = "interactive_mode"
 path = "tests/interactive_mode.rs"
 
 [[test]]
+name = "snmp_daemon"
+path = "tests/snmp_daemon.rs"
+
+[[test]]
 name = "interval_lcm"
 path = "tests/interval_lcm.rs"
 

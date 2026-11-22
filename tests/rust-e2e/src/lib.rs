@@ -1,5 +1,5 @@
 use std::env;
-use std::ffi::OsString;
+use std::ffi::{OsStr, OsString};
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -57,7 +57,7 @@ pub fn write_config(directory: &Path, name: &str, content: &str) -> PathBuf {
 /// Run rpimonitord with isolated environment settings.
 /// If PERL_COVERAGE=1, launch it through Devel::Cover as the Python harness does.
 /// PERL_COVERAGE_DB overrides the coverage database path.
-fn command(args: &[OsString], working_dir: &Path) -> Command {
+fn command(program: &Path, args: &[OsString], working_dir: &Path) -> Command {
     let root = repository_root();
     let binary = binary_path();
     assert!(
@@ -78,12 +78,20 @@ fn command(args: &[OsString], working_dir: &Path) -> Command {
         let coverage_support = Path::new(env!("CARGO_MANIFEST_DIR")).join("support");
         cmd.arg(coverage_options)
             .arg(format!("-I{}", coverage_support.display()))
-            .arg("-MDevel::Cover::Signal")
-            .arg(&binary)
-            .args(args);
+            .arg("-MDevel::Cover::Signal");
+        if program.file_name() == Some(OsStr::new("rpimonitord-snmp")) && program.is_symlink() {
+            cmd.arg("-e")
+                .arg("$0 = shift; my $script = shift; do $script or die $@ || $!;")
+                .arg("--")
+                .arg(program)
+                .arg(&binary);
+        } else {
+            cmd.arg(program);
+        }
+        cmd.args(args);
         cmd
     } else {
-        let mut cmd = Command::new(&binary);
+        let mut cmd = Command::new(program);
         cmd.args(args);
         cmd
     };
@@ -103,14 +111,24 @@ fn command(args: &[OsString], working_dir: &Path) -> Command {
 }
 
 pub fn run(args: &[OsString], working_dir: &Path) -> Output {
-    command(args, working_dir)
+    command(&binary_path(), args, working_dir)
         .output()
         .expect("launch rpimonitord")
 }
 
 /// Run rpimonitord with scripted standard input and isolated environment settings.
 pub fn run_with_stdin(args: &[OsString], working_dir: &Path, input: &[u8]) -> Output {
-    let mut child = command(args, working_dir)
+    run_program_with_stdin(&binary_path(), args, working_dir, input)
+}
+
+/// Run a named rpimonitord entry point with scripted standard input.
+pub fn run_program_with_stdin(
+    program: &Path,
+    args: &[OsString],
+    working_dir: &Path,
+    input: &[u8],
+) -> Output {
+    let mut child = command(program, args, working_dir)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
