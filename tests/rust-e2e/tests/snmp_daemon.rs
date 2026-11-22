@@ -36,7 +36,7 @@ fn snmp_symlink_dispatches_pass_persist_ping_and_get() {
         directory.path(),
         "snmp.conf",
         &format!(
-            "daemon.noserver=1\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.sharedmemkey={sharedmemkey}\ndaemon.datastore={}\ndaemon.webroot={}\ndynamic.1.name=fixture_metric\ndynamic.1.source=/bin/echo 17\ndynamic.1.regexp=(\\d+)\ndynamic.1.interval=1\nsnmpagent.enterpriseoid=42424\nsnmpagent.rpimonitoroid=77\nsnmp.hostname.type=string\nsnmp.hostname.id=1\n",
+            "daemon.noserver=1\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.sharedmemkey={sharedmemkey}\ndaemon.datastore={}\ndaemon.webroot={}\ndynamic.1.name=fixture_metric\ndynamic.1.source=/bin/echo 17\ndynamic.1.regexp=(\\d+)\ndynamic.1.interval=1\nsnmpagent.enterpriseoid=42424\nsnmpagent.rpimonitoroid=77\nsnmp.hostname.type=string\nsnmp.hostname.id=1\nsnmp.fixture_metric.type=integer\nsnmp.fixture_metric.id=2\nsnmp.fixture_metric.postprocess=$1*2\n",
             datastore.display(),
             webroot.display()
         ),
@@ -69,8 +69,9 @@ fn snmp_symlink_dispatches_pass_persist_ping_and_get() {
         thread::sleep(Duration::from_millis(100));
     }
 
-    let oid = ".1.3.6.1.4.1.42424.77.1";
-    let input = format!("PING\nget\n{oid}\n");
+    let hostname_oid = ".1.3.6.1.4.1.42424.77.1";
+    let metric_oid = ".1.3.6.1.4.1.42424.77.2";
+    let input = format!("PING\nget\n{hostname_oid}\nget\n{metric_oid}\n");
     let output = run_program_with_stdin(
         &symlink_path,
         &[OsString::from("-c"), config.into_os_string()],
@@ -89,7 +90,7 @@ fn snmp_symlink_dispatches_pass_persist_ping_and_get() {
     let lines: Vec<_> = stdout.lines().collect();
     assert_eq!(
         lines.len(),
-        4,
+        7,
         "unexpected SNMP response framing: {stdout:?}"
     );
     assert_eq!(
@@ -98,7 +99,7 @@ fn snmp_symlink_dispatches_pass_persist_ping_and_get() {
         "unexpected SNMP ping response: {stdout:?}"
     );
     assert_eq!(
-        lines[1], oid,
+        lines[1], hostname_oid,
         "SNMP response should identify the requested OID"
     );
     assert_eq!(
@@ -108,6 +109,18 @@ fn snmp_symlink_dispatches_pass_persist_ping_and_get() {
     assert!(
         !lines[3].is_empty(),
         "hostname OID should return a value; stdout={stdout:?}"
+    );
+    assert_eq!(
+        lines[4], metric_oid,
+        "dynamic metric response should identify the requested OID"
+    );
+    assert_eq!(
+        lines[5], "integer",
+        "dynamic metric OID should use the configured type"
+    );
+    assert_eq!(
+        lines[6], "34",
+        "dynamic metric OID should expose its post-processed value"
     );
     drop(daemon);
 }
