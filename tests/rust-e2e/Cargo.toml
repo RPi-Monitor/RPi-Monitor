@@ -11,5 +11,9 @@ name = "cli_options"
 path = "tests/cli_options.rs"
 
 [[test]]
+name = "configuration_defaults"
+path = "tests/configuration_defaults.rs"
+
+[[test]]
 name = "cli_help"
 path = "tests/cli_help.rs"
