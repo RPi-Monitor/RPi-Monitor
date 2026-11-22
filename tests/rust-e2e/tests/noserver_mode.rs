@@ -890,6 +890,21 @@ fn web_server_serves_existing_static_files_from_webroot() {
         "HTTP response should contain the fixture file bytes; response={favicon_text:?}"
     );
 
+    let rrd_response = get("/stat/empty.rrd");
+    let rrd_text = String::from_utf8_lossy(&rrd_response);
+    assert!(
+        rrd_text.starts_with("HTTP/1.1 200") || rrd_text.starts_with("HTTP/1.0 200"),
+        "existing RRD file should return HTTP 200; response={rrd_text:?}"
+    );
+    let header_end = rrd_response
+        .windows(4)
+        .position(|window| window == b"\r\n\r\n")
+        .expect("HTTP response should contain a header/body separator");
+    assert!(
+        rrd_response[header_end + 4..].starts_with(b"RRD"),
+        "datastore RRD endpoint should return the RRD file bytes; response={rrd_text:?}"
+    );
+
     let menu_response = get("/menu.json");
     let menu_text = String::from_utf8_lossy(&menu_response);
     assert!(
