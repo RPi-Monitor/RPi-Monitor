@@ -33,3 +33,7 @@ path = "tests/cli_help.rs"
 [[test]]
 name = "noserver_mode"
 path = "tests/noserver_mode.rs"
+
+[[test]]
+name = "rrd_creation"
+path = "tests/rrd_creation.rs"
