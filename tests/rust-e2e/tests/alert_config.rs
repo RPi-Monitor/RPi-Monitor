@@ -327,3 +327,118 @@ fn alert_fires_when_compound_trigger_conditions_are_all_true() {
         "daemon did not stop after SIGTERM"
     );
 }
+
+// ---------------------------------------------------------------------------
+// Alert runtime: cancelcommand after the trigger clears
+// ---------------------------------------------------------------------------
+
+/// A sustained trigger raises an alert; once the source clears for the
+/// configured validation period, the daemon sends the cancel command.
+#[test]
+fn alert_cancelcommand_runs_after_trigger_clears() {
+    use std::net::TcpListener;
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = TempDir::new("rpimonitor-e2e-alert-cancel");
+    let webroot = dir.path().join("web");
+    let datastore = dir.path().join("data");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(datastore.join("stat")).expect("create datastore/stat");
+
+    let runs = dir.path().join("source-runs");
+    let source = dir.path().join("metric-source");
+    fs::write(
+        &source,
+        format!(
+            "#!/bin/sh\n\
+             count=0\n\
+             if [ -f '{}' ]; then count=$(cat '{}'); fi\n\
+             count=$((count + 1))\n\
+             printf '%s\\n' \"$count\" > '{}'\n\
+             if [ \"$count\" -le 4 ]; then printf '95\\n'; else printf '10\\n'; fi\n",
+            runs.display(),
+            runs.display(),
+            runs.display(),
+        ),
+    )
+    .expect("write changing metric source");
+    let mut permissions = fs::metadata(&source)
+        .expect("read source permissions")
+        .permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(&source, permissions).expect("make source executable");
+
+    let alert_log = dir.path().join("alert.log");
+    let pid = std::process::id();
+    let sharedmemkey = 700_000 + (pid % 100_000);
+    let probe = TcpListener::bind(("127.0.0.1", 0)).expect("reserve ephemeral port");
+    let port = probe.local_addr().expect("read port").port();
+    drop(probe);
+
+    let config = write_config(
+        dir.path(),
+        "alert-cancel.conf",
+        &format!(
+            "daemon.addr=127.0.0.1\n\
+             daemon.port={port}\n\
+             daemon.delay=1\n\
+             daemon.datastore={}\n\
+             daemon.webroot={}\n\
+             daemon.sharedmemkey={sharedmemkey}\n\
+             dynamic.1.name=disk_space\n\
+             dynamic.1.source={}\n\
+             dynamic.1.regexp=(\\d+)\n\
+             dynamic.1.interval=1\n\
+             alert.disk_full.active=1\n\
+             alert.disk_full.trigger=data.disk_space > 90\n\
+             alert.disk_full.maxalertduration=0\n\
+             alert.disk_full.cancelvalidation=1\n\
+             alert.disk_full.resendperiod=30\n\
+             alert.disk_full.raisecommand=/bin/echo raise >> {}\n\
+             alert.disk_full.cancelcommand=/bin/echo cancel >> {}\n",
+            datastore.display(),
+            webroot.display(),
+            source.display(),
+            alert_log.display(),
+            alert_log.display(),
+        ),
+    );
+    let pid_file = dir.path().join("rpimonitor-alert-cancel.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let content = wait_for_file_content(&alert_log, "cancel", Duration::from_secs(20));
+    assert!(
+        content.is_some(),
+        "cancelcommand did not run after the trigger cleared; alert log={alert_log:?}"
+    );
+    let content = content.unwrap();
+    let lines: Vec<_> = content.lines().collect();
+    assert_eq!(
+        lines,
+        ["raise", "cancel"],
+        "alert and cancellation commands should run once and in order"
+    );
+
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop after SIGTERM"
+    );
+}
