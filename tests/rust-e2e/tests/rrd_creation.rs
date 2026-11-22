@@ -215,6 +215,77 @@ fn daemon_creates_rrd_stat_directory_and_empty_rrd() {
 }
 
 #[test]
+fn daemon_preserves_existing_dynamic_rrd() {
+    let dir = TempDir::new("rpimonitor-e2e-rrd-existing-dynamic");
+    let datastore = dir.path().join("data");
+    let webroot = dir.path().join("web");
+    let stat_dir = datastore.join("stat");
+    fs::create_dir_all(&stat_dir).expect("create datastore stat directory");
+    fs::create_dir_all(&webroot).expect("create webroot");
+
+    let existing_rrd = stat_dir.join("existing_metric.rrd");
+    let fixture = Command::new("rrdtool")
+        .arg("create")
+        .arg(&existing_rrd)
+        .args([
+            "--start",
+            "1000000000",
+            "--step",
+            "1",
+            "DS:existing_metric:GAUGE:2:U:U",
+            "RRA:AVERAGE:0.5:1:10",
+        ])
+        .output()
+        .expect("create existing RRD fixture");
+    assert!(
+        fixture.status.success(),
+        "rrdtool create failed: {}",
+        String::from_utf8_lossy(&fixture.stderr)
+    );
+
+    let config = write_config(
+        dir.path(),
+        "rrd-existing-dynamic.conf",
+        &format!(
+            "daemon.datastore={}\ndaemon.webroot={}\ndaemon.delay=1\ndaemon.readonly=0\ndaemon.noserver=1\n\
+             dynamic.1.name=existing_metric\ndynamic.1.source=/bin/echo 42\ndynamic.1.regexp=(\\d+)\n\
+             dynamic.1.rrd=GAUGE\ndynamic.1.interval=1\n",
+            datastore.display(),
+            webroot.display(),
+        ),
+    );
+    let pid_file = dir.path().join("rpimonitor-rrd-existing-dynamic.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stderr={}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let info = rrdtool_info(&existing_rrd);
+    assert_ds_type(&info, "existing_metric", "GAUGE");
+    assert_rra_count(&info, 1);
+
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop after SIGTERM"
+    );
+}
+
+#[test]
 fn daemon_creates_dynamic_rrd_with_expected_archive_configuration() {
     let dir = TempDir::new("rpimonitor-e2e-rrd-rra");
     let datastore = dir.path().join("data");
