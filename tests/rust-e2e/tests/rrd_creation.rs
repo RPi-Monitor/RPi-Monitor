@@ -305,6 +305,80 @@ fn daemon_creates_derive_rrd_for_dynamic_metric() {
     assert_dynamic_rrd_type("DERIVE");
 }
 
+#[test]
+fn daemon_stores_unknown_rrd_value_when_dynamic_source_does_not_match() {
+    let dir = TempDir::new("rpimonitor-e2e-rrd-unknown");
+    let datastore = dir.path().join("data");
+    let webroot = dir.path().join("web");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(&datastore).expect("create datastore");
+
+    let config = write_config(
+        dir.path(),
+        "rrd-unknown.conf",
+        &format!(
+            "daemon.datastore={}\ndaemon.webroot={}\ndaemon.delay=1\ndaemon.readonly=0\ndaemon.noserver=1\n\
+             dynamic.1.name=missing_metric\ndynamic.1.source=/bin/echo not-a-number\ndynamic.1.regexp=(\\d+)\ndynamic.1.rrd=GAUGE\ndynamic.1.interval=1\n",
+            datastore.display(),
+            webroot.display(),
+        ),
+    );
+    let pid_file = dir.path().join("rpimonitor-rrd-unknown.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let dynamic_json = webroot.join("dynamic.json");
+    assert!(
+        wait_for_path(&dynamic_json, Duration::from_secs(8)),
+        "daemon did not write dynamic.json"
+    );
+    let json = fs::read_to_string(&dynamic_json).expect("read dynamic.json");
+    assert!(
+        json.contains("\"missing_metric\":null"),
+        "unmatched source without a default should be null in dynamic.json: {json}"
+    );
+
+    let rrd_file = datastore.join("stat").join("missing_metric.rrd");
+    assert!(
+        wait_for_path(&rrd_file, Duration::from_secs(8)),
+        "missing_metric.rrd was not created"
+    );
+    let lastupdate = Command::new("rrdtool")
+        .args(["lastupdate", &rrd_file.to_string_lossy()])
+        .output()
+        .expect("rrdtool lastupdate");
+    let lastupdate_stdout = String::from_utf8_lossy(&lastupdate.stdout);
+    assert!(
+        lastupdate.status.success() && lastupdate_stdout.contains("U"),
+        "RRD should record an unknown value for the unmatched metric; \
+         status={:?}; stdout={lastupdate_stdout:?}; stderr={:?}",
+        lastupdate.status.code(),
+        String::from_utf8_lossy(&lastupdate.stderr)
+    );
+
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop after SIGTERM"
+    );
+}
+
 fn assert_dynamic_rrd_type(rrd_type: &str) {
     let metric_name = format!("temperature_{}", rrd_type.to_lowercase());
     let prefix = format!("rpimonitor-e2e-rrd-{}", rrd_type.to_lowercase());
