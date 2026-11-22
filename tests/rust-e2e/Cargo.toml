@@ -49,3 +49,7 @@ path = "tests/alert_config.rs"
 [[test]]
 name = "interval_lcm"
 path = "tests/interval_lcm.rs"
+
+[[test]]
+name = "rrd_min_max"
+path = "tests/rrd_min_max.rs"
