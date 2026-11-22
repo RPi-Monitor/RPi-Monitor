@@ -74,7 +74,12 @@ pub fn run(args: &[OsString], working_dir: &Path) -> Output {
             coverage_db.display()
         );
         let mut cmd = Command::new("perl");
-        cmd.arg(coverage_options).arg(&binary).args(args);
+        let coverage_support = Path::new(env!("CARGO_MANIFEST_DIR")).join("support");
+        cmd.arg(coverage_options)
+            .arg(format!("-I{}", coverage_support.display()))
+            .arg("-MDevel::Cover::Signal")
+            .arg(&binary)
+            .args(args);
         cmd
     } else {
         let mut cmd = Command::new(&binary);
