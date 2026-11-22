@@ -60,7 +60,7 @@ Status meanings:
 - `tests/rust-e2e/tests/cli_options.rs`: CLI flags, version output, log file, background/PID behavior, combined options, and zero-valued option arguments.
 - `tests/rust-e2e/tests/cli_help.rs`: `-h` and `--help` exit code and help text content.
 - `tests/rust-e2e/tests/configuration_defaults.rs`: defaults and explicit daemon overrides.
-- `tests/rust-e2e/tests/configuration_loadfile.rs`: indexed keys, nested indexed values, multiple configuration files, and default menu labels when status/statistics titles are missing.
+- `tests/rust-e2e/tests/configuration_loadfile.rs`: indexed keys, nested indexed values and arrays, multiple configuration files, and default menu labels when status/statistics titles are missing.
 - `tests/rust-e2e/tests/configuration_cli.rs`: comments, includes, interval summary, nested values.
 - `tests/rust-e2e/tests/monitor_extraction.rs`: extraction-related configuration survives loading; **not runtime extraction coverage**.
 - `tests/rust-e2e/tests/noserver_mode.rs`: starts the real daemon in background no-server mode and checks command output extraction, arithmetic post-processing, static values, companion JSON files, read-only no-write, HTTP endpoints (static.json, dynamic.json, menu.json, 404, webroot/addon/datastore file serving, missing-RRD fallback), runtime timeout, multiple capture groups, flat-file last-match, data expansion, and configured dynamic-source intervals.

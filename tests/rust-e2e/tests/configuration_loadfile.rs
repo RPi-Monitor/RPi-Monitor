@@ -144,6 +144,36 @@ fn nested_indexed_status_content_is_preserved_in_order() {
 }
 
 #[test]
+fn nested_numeric_configuration_keys_build_nested_arrays() {
+    let directory = TempDir::new("rpimonitor-loadfile-nested-arrays");
+    let config = write_config(
+        directory.path(),
+        "nested-arrays.conf",
+        "web.status.1.content.1.1=First detail\nweb.status.1.content.1.2=Second detail\n",
+    );
+
+    let output = show_configuration(
+        &directory,
+        &[config.to_str().expect("UTF-8 config path")],
+    );
+
+    let first = output
+        .find("'First detail'")
+        .expect("first nested value should be loaded");
+    let second = output
+        .find("'Second detail'")
+        .expect("second nested value should be loaded");
+    assert!(
+        first < second,
+        "nested numeric keys should preserve array order: {output}"
+    );
+    assert!(
+        output.contains("'content' => ["),
+        "nested numeric keys should be represented as an array: {output}"
+    );
+}
+
+#[test]
 fn dynamic_rrd_declarations_are_preserved_in_loaded_configuration() {
     let directory = TempDir::new("rpimonitor-loadfile-rrd");
     let config = write_config(
