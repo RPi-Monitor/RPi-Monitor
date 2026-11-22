@@ -196,7 +196,8 @@ fn alert_raisecommand_writes_marker_file_when_trigger_fires() {
              alert.disk_full.maxalertduration=1\n\
              alert.disk_full.cancelvalidation=3\n\
              alert.disk_full.resendperiod=30\n\
-             alert.disk_full.raisecommand=/bin/echo disk-full-alert > {}\n\
+             alert.disk_full.label=disk-full-alert\n\
+             alert.disk_full.raisecommand=/bin/echo config:data.alert.disk_full.label state:data.alert.disk_full.alertstate metric:data.disk_space > {}\n\
              alert.disk_full.cancelcommand=/bin/echo disk-ok\n",
             datastore.display(),
             webroot.display(),
@@ -222,9 +223,13 @@ fn alert_raisecommand_writes_marker_file_when_trigger_fires() {
         String::from_utf8_lossy(&output.stderr)
     );
 
-    let content = wait_for_file_content(&marker, "disk-full-alert", Duration::from_secs(15));
+    let content = wait_for_file_content(
+        &marker,
+        "config:disk-full-alert state:1 metric:95",
+        Duration::from_secs(15),
+    );
     assert!(
-        content.is_some(),
+        content.as_deref() == Some("config:disk-full-alert state:1 metric:95\n"),
         "raisecommand did not write marker to {marker:?} within 15 s; \
          daemon stderr={:?}",
         String::from_utf8_lossy(&output.stderr)
