@@ -118,6 +118,32 @@ fn menu_uses_default_labels_when_status_and_statistics_titles_are_missing() {
 }
 
 #[test]
+fn nested_indexed_status_content_is_preserved_in_order() {
+    let directory = TempDir::new("rpimonitor-loadfile-nested-content");
+    let config = write_config(
+        directory.path(),
+        "nested-content.conf",
+        "web.status.1.title=System Status\nweb.status.1.content.1=First detail\nweb.status.1.content.2=Second detail\n",
+    );
+
+    let output = show_configuration(
+        &directory,
+        &[config.to_str().expect("UTF-8 config path")],
+    );
+
+    let first = output
+        .find("'First detail'")
+        .expect("first status content should be loaded");
+    let second = output
+        .find("'Second detail'")
+        .expect("second status content should be loaded");
+    assert!(
+        first < second,
+        "indexed status content should retain its configured order: {output}"
+    );
+}
+
+#[test]
 fn dynamic_rrd_declarations_are_preserved_in_loaded_configuration() {
     let directory = TempDir::new("rpimonitor-loadfile-rrd");
     let config = write_config(
