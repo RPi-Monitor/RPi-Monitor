@@ -107,14 +107,23 @@ fn assert_ds_type(info: &str, ds_name: &str, expected_type: &str) {
 
 /// Assert that `rrdtool info` output contains exactly the expected number of RRA archives.
 fn assert_rra_count(info: &str, expected: usize) {
-    let count = info
-        .lines()
-        .filter(|l| l.contains(".cf = "))
-        .count();
+    let count = info.lines().filter(|l| l.contains(".cf = ")).count();
     assert_eq!(
         count, expected,
         "expected {expected} RRAs, found {count}; rrdtool output:\n{info}"
     );
+}
+
+fn assert_rra_value(info: &str, index: usize, field: &str, expected: &str) {
+    let key = format!("rra[{index}].{field}");
+    let value = info
+        .lines()
+        .find_map(|line| {
+            let (name, value) = line.split_once(" = ")?;
+            (name == key).then(|| value.trim_matches('"'))
+        })
+        .unwrap_or_else(|| panic!("key '{key}' not found in rrdtool info output:\n{info}"));
+    assert_eq!(value, expected, "unexpected {key}; info:\n{info}");
 }
 
 // ---------------------------------------------------------------------------
@@ -145,7 +154,9 @@ fn daemon_creates_rrd_stat_directory_and_empty_rrd() {
         ),
     );
     let pid_file = dir.path().join("rpimonitor-rrd-empty.pid");
-    let daemon = BackgroundDaemon { pid_file: pid_file.clone() };
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
 
     let output = run(
         &[
@@ -176,17 +187,99 @@ fn daemon_creates_rrd_stat_directory_and_empty_rrd() {
         wait_for_path(&empty_rrd, Duration::from_secs(5)),
         "empty.rrd was not created at {empty_rrd:?}"
     );
-    assert!(empty_rrd.is_file(), "empty.rrd path exists but is not a regular file");
-    assert!(empty_rrd.metadata().unwrap().len() > 0, "empty.rrd file should not be zero bytes");
+    assert!(
+        empty_rrd.is_file(),
+        "empty.rrd path exists but is not a regular file"
+    );
+    assert!(
+        empty_rrd.metadata().unwrap().len() > 0,
+        "empty.rrd file should not be zero bytes"
+    );
 
     // Validate the RRD schema via rrdtool info
     let info = rrdtool_info(&empty_rrd);
-    assert!(info.contains("ds[empty].type"), "empty.rrd missing 'empty' data source");
+    assert!(
+        info.contains("ds[empty].type"),
+        "empty.rrd missing 'empty' data source"
+    );
     assert_rra_count(&info, 5);
     assert!(
         info.contains("rra[0].cf = \"AVERAGE\"") || info.contains("rra[0].cf = 'AVERAGE'"),
         "first RRA should be AVERAGE; info:\n{info}"
     );
+
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop after SIGTERM"
+    );
+}
+
+#[test]
+fn daemon_creates_dynamic_rrd_with_expected_archive_configuration() {
+    let dir = TempDir::new("rpimonitor-e2e-rrd-rra");
+    let datastore = dir.path().join("data");
+    let webroot = dir.path().join("web");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(&datastore).expect("create datastore");
+
+    let config = write_config(
+        dir.path(),
+        "rrd-rra.conf",
+        &format!(
+            "daemon.datastore={}\ndaemon.webroot={}\ndaemon.delay=1\ndaemon.readonly=0\ndaemon.noserver=1\n\
+             dynamic.1.name=test_rra\ndynamic.1.source=/bin/echo 42\ndynamic.1.regexp=([0-9.]+)\n\
+             dynamic.1.rrd=GAUGE\ndynamic.1.interval=1\n",
+            datastore.display(),
+            webroot.display(),
+        ),
+    );
+    let pid_file = dir.path().join("rpimonitor-rrd-rra.pid");
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+    assert!(
+        matches!(output.status.code(), Some(0 | 2 | 255)),
+        "daemon launch failed: status={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let rrd_file = datastore.join("stat").join("test_rra.rrd");
+    assert!(
+        wait_for_path(&rrd_file, Duration::from_secs(8)),
+        "test_rra.rrd was not created"
+    );
+
+    let info = rrdtool_info(&rrd_file);
+    let expected_archives = [(0, 8640), (1, 2880), (2, 2016), (3, 1488), (4, 8784)];
+    assert_rra_count(&info, expected_archives.len());
+    for (index, rows) in expected_archives {
+        assert_rra_value(&info, index, "cf", "AVERAGE");
+        assert_rra_value(&info, index, "rows", &rows.to_string());
+        let xff_key = format!("rra[{index}].xff");
+        let xff = info
+            .lines()
+            .find_map(|line| {
+                let (name, value) = line.split_once(" = ")?;
+                (name == xff_key).then(|| value.replace(',', ".").parse::<f64>().ok())
+            })
+            .flatten()
+            .unwrap_or_else(|| panic!("key '{xff_key}' missing or not numeric; info:\n{info}"));
+        assert!(
+            (xff - 0.5).abs() < f64::EPSILON,
+            "unexpected {xff_key}: expected 0.5, got {xff}; info:\n{info}"
+        );
+    }
 
     assert!(
         daemon.stop_and_wait(Duration::from_secs(5)),
@@ -232,8 +325,12 @@ fn assert_dynamic_rrd_type(rrd_type: &str) {
             webroot.display(),
         ),
     );
-    let pid_file = dir.path().join(format!("rpimonitor-rrd-{}.pid", rrd_type.to_lowercase()));
-    let daemon = BackgroundDaemon { pid_file: pid_file.clone() };
+    let pid_file = dir
+        .path()
+        .join(format!("rpimonitor-rrd-{}.pid", rrd_type.to_lowercase()));
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
 
     let output = run(
         &[
@@ -261,9 +358,10 @@ fn assert_dynamic_rrd_type(rrd_type: &str) {
     assert!(
         wait_for_path(&rrd_file, Duration::from_secs(8)),
         "{rrd_type}: {metric_name}.rrd not created; stat dir contents: {:?}",
-        fs::read_dir(&stat_dir)
-            .ok()
-            .map(|e| e.filter_map(|e| e.ok()).map(|e| e.file_name()).collect::<Vec<_>>())
+        fs::read_dir(&stat_dir).ok().map(|e| e
+            .filter_map(|e| e.ok())
+            .map(|e| e.file_name())
+            .collect::<Vec<_>>())
     );
     assert!(rrd_file.is_file());
 

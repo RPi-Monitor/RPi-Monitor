@@ -46,8 +46,8 @@ Status meanings:
 | `test_rpimonitord_help.py` | `-h` and `--help` output | `cli_help.rs` asserts exit code 2/255 and checks all expected help sections | **Ported** — exit code and all public help text sections are verified |
 | `test_rpimonitord_version.py` | `-V` and `--Version` output | `cli_options.rs` covers both flags and stderr output | **Ported** — confirm output/exit assertions match the legacy contract |
 | `test_rrd_creation.py` | RRD directory/empty RRD creation; dynamic RRD types GAUGE/COUNTER/DERIVE | `rrd_creation.rs` covers stat directory, empty.rrd schema (5 RRAs, AVERAGE CF), and GAUGE/COUNTER/DERIVE dynamic RRDs | **Ported** — all four test cases (directory, empty.rrd, three RRD types) are covered |
-| `test_rrd_min_max_values.py` | RRD data-source minimum/maximum bounds across cases | No Rust coverage | **Missing** — port all legacy bounds cases |
-| `test_rrd_rra_configuration.py` | RRD archive/RRA configuration | No Rust coverage | **Missing** — verify archive metadata through an external RRD inspection command/library interface |
+| `test_rrd_min_max_values.py` | RRD data-source minimum/maximum bounds across cases | `rrd_min_max.rs` checks configured and unbounded DS limits for in-range, below-minimum, and above-maximum values | **Ported** — all four bound scenarios are verified through `rrdtool info` |
+| `test_rrd_rra_configuration.py` | RRD archive/RRA configuration | `rrd_creation.rs` checks all five archives' consolidation function, rows, and XFF through `rrdtool info` | **Ported** — all legacy RRA metadata assertions are covered |
 | `test_server_readonly_status.py` | Read-only status through server JSON | CLI read-only flag is covered, but server response is not | **Partial** — assert the endpoint response in read-only mode |
 | `test_shared_memory.py` | Shared memory through web endpoint, no-server mode, and error conditions | No Rust coverage | **Missing** — verify observable endpoints/files and error behavior without inspecting internal memory APIs |
 | `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | No Rust coverage | **Missing** — test the executable/symlink interface in an isolated environment |
@@ -65,7 +65,8 @@ Status meanings:
 - `tests/rust-e2e/tests/monitor_extraction.rs`: extraction-related configuration survives loading; **not runtime extraction coverage**.
 - `tests/rust-e2e/tests/noserver_mode.rs`: starts the real daemon in background no-server mode and checks command output extraction, arithmetic post-processing, static values, companion JSON files, read-only no-write, HTTP endpoints (static.json, dynamic.json, 404, file serving), runtime timeout, multiple capture groups, flat-file last-match, and data expansion.
 - `tests/rust-e2e/tests/daemonize.rs`: PID file creation and content, daemon terminal detachment, graceful SIGTERM/SIGINT, show-mode no-pidfile, SIGUSR1/SIGUSR2 log-level adjustment.
-- `tests/rust-e2e/tests/rrd_creation.rs`: stat directory creation, empty.rrd schema validation (5 RRAs, AVERAGE CF), and GAUGE/COUNTER/DERIVE dynamic RRD creation via `rrdtool info`.
+- `tests/rust-e2e/tests/rrd_creation.rs`: stat directory creation, empty.rrd schema validation, all five dynamic RRA configurations (CF, rows, XFF), and GAUGE/COUNTER/DERIVE dynamic RRD creation via `rrdtool info`.
+- `tests/rust-e2e/tests/rrd_min_max.rs`: configured and unbounded DS min/max values, including values outside configured bounds.
 - `tests/rust-e2e/tests/alert_config.rs`: alert key/value config loading via `-s` dump, raisecommand file side effect, compound `&&` trigger condition.
 - `tests/rust-e2e/tests/interval_lcm.rs`: maxinterval = LCM of all dynamic intervals (three-interval case distinguishing LCM from GCD, single-interval boundary, coprime-prime pairs).
 - `tests/suite/*.bats`: existing install/update/security shell scenarios are separate from the Python behavior-test inventory and must be reviewed independently before claiming full repository test coverage.

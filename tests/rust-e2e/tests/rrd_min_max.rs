@@ -85,6 +85,12 @@ fn rrdtool_info(rrd_path: &std::path::Path) -> String {
         .args(["info", &rrd_path.to_string_lossy()])
         .output()
         .expect("rrdtool info");
+    assert!(
+        out.status.success(),
+        "rrdtool info failed for {rrd_path:?}: status={:?}; stderr={}",
+        out.status.code(),
+        String::from_utf8_lossy(&out.stderr)
+    );
     String::from_utf8_lossy(&out.stdout).into_owned()
 }
 
@@ -94,15 +100,15 @@ fn rrdtool_info(rrd_path: &std::path::Path) -> String {
 fn parse_ds_float(info: &str, ds_name: &str, field: &str) -> Option<f64> {
     let key = format!("ds[{ds_name}].{field}");
     for line in info.lines() {
-        if let Some(rest) = line.strip_prefix(&key) {
-            let val = rest.trim_start_matches([' ', '=']).trim();
-            // rrdtool may print NaN or the value with a locale-dependent decimal sep
-            if val.eq_ignore_ascii_case("nan") {
+        let Some((name, value)) = line.trim_start().split_once(" = ") else {
+            continue;
+        };
+        if name == key {
+            // rrdtool may print NaN or use a locale-dependent decimal separator.
+            if value.eq_ignore_ascii_case("nan") {
                 return None;
             }
-            // Normalise locale decimal separator (comma → dot)
-            let normalised = val.replace(',', ".");
-            return normalised.parse().ok();
+            return value.replace(',', ".").parse().ok();
         }
     }
     None
@@ -137,7 +143,9 @@ fn launch_daemon_with_rrd_bounds(
         ),
     );
     let pid_file = dir.join(format!("{metric_name}.pid"));
-    let daemon = BackgroundDaemon { pid_file: pid_file.clone() };
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
 
     let output = run(
         &[
@@ -169,9 +177,8 @@ fn launch_daemon_with_rrd_bounds(
 #[test]
 fn rrd_ds_bounds_are_stored_for_in_range_values() {
     let dir = TempDir::new("rpimonitor-e2e-rrd-bounds-normal");
-    let (daemon, rrd_file) = launch_daemon_with_rrd_bounds(
-        dir.path(), "normal_values", "50", "0", "100",
-    );
+    let (daemon, rrd_file) =
+        launch_daemon_with_rrd_bounds(dir.path(), "normal_values", "50", "0", "100");
 
     assert!(
         wait_for_path(&rrd_file, Duration::from_secs(8)),
@@ -181,9 +188,9 @@ fn rrd_ds_bounds_are_stored_for_in_range_values() {
     let info = rrdtool_info(&rrd_file);
 
     let min = parse_ds_float(&info, "normal_values", "min")
-        .expect("ds[normal_values].min should be a number");
+        .unwrap_or_else(|| panic!("ds[normal_values].min should be a number; info:\n{info}"));
     let max = parse_ds_float(&info, "normal_values", "max")
-        .expect("ds[normal_values].max should be a number");
+        .unwrap_or_else(|| panic!("ds[normal_values].max should be a number; info:\n{info}"));
 
     assert!(
         (min - 0.0_f64).abs() < 1e-6,
@@ -194,7 +201,10 @@ fn rrd_ds_bounds_are_stored_for_in_range_values() {
         "DS max should be 100.0, got {max}; info:\n{info}"
     );
 
-    assert!(daemon.stop_and_wait(Duration::from_secs(5)), "daemon did not stop");
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop"
+    );
 }
 
 /// `test_rrd_min_max_values` — below_min case
@@ -204,9 +214,8 @@ fn rrd_ds_bounds_are_stored_for_in_range_values() {
 #[test]
 fn rrd_ds_min_bound_is_zero_even_when_source_is_below_range() {
     let dir = TempDir::new("rpimonitor-e2e-rrd-bounds-below");
-    let (daemon, rrd_file) = launch_daemon_with_rrd_bounds(
-        dir.path(), "below_min", "-10", "0", "100",
-    );
+    let (daemon, rrd_file) =
+        launch_daemon_with_rrd_bounds(dir.path(), "below_min", "-10", "0", "100");
 
     assert!(
         wait_for_path(&rrd_file, Duration::from_secs(8)),
@@ -216,9 +225,9 @@ fn rrd_ds_min_bound_is_zero_even_when_source_is_below_range() {
     let info = rrdtool_info(&rrd_file);
 
     let min = parse_ds_float(&info, "below_min", "min")
-        .expect("ds[below_min].min should be a number");
+        .unwrap_or_else(|| panic!("ds[below_min].min should be a number; info:\n{info}"));
     let max = parse_ds_float(&info, "below_min", "max")
-        .expect("ds[below_min].max should be a number");
+        .unwrap_or_else(|| panic!("ds[below_min].max should be a number; info:\n{info}"));
 
     assert!(
         (min - 0.0_f64).abs() < 1e-6,
@@ -229,7 +238,10 @@ fn rrd_ds_min_bound_is_zero_even_when_source_is_below_range() {
         "DS max should be 100.0, got {max}"
     );
 
-    assert!(daemon.stop_and_wait(Duration::from_secs(5)), "daemon did not stop");
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop"
+    );
 }
 
 /// `test_rrd_min_max_values` — above_max case
@@ -238,9 +250,8 @@ fn rrd_ds_min_bound_is_zero_even_when_source_is_below_range() {
 #[test]
 fn rrd_ds_max_bound_is_100_even_when_source_exceeds_range() {
     let dir = TempDir::new("rpimonitor-e2e-rrd-bounds-above");
-    let (daemon, rrd_file) = launch_daemon_with_rrd_bounds(
-        dir.path(), "above_max", "150", "0", "100",
-    );
+    let (daemon, rrd_file) =
+        launch_daemon_with_rrd_bounds(dir.path(), "above_max", "150", "0", "100");
 
     assert!(
         wait_for_path(&rrd_file, Duration::from_secs(8)),
@@ -250,9 +261,9 @@ fn rrd_ds_max_bound_is_100_even_when_source_exceeds_range() {
     let info = rrdtool_info(&rrd_file);
 
     let min = parse_ds_float(&info, "above_max", "min")
-        .expect("ds[above_max].min should be a number");
+        .unwrap_or_else(|| panic!("ds[above_max].min should be a number; info:\n{info}"));
     let max = parse_ds_float(&info, "above_max", "max")
-        .expect("ds[above_max].max should be a number");
+        .unwrap_or_else(|| panic!("ds[above_max].max should be a number; info:\n{info}"));
 
     assert!(
         (min - 0.0_f64).abs() < 1e-6,
@@ -263,7 +274,10 @@ fn rrd_ds_max_bound_is_100_even_when_source_exceeds_range() {
         "DS max should be 100.0, got {max}"
     );
 
-    assert!(daemon.stop_and_wait(Duration::from_secs(5)), "daemon did not stop");
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop"
+    );
 }
 
 /// `test_rrd_min_max_values` — no explicit bounds (U:U defaults)
@@ -291,7 +305,9 @@ fn rrd_ds_has_unknown_bounds_when_no_min_max_configured() {
         ),
     );
     let pid_file = dir.path().join("rpimonitor-bounds-unset.pid");
-    let daemon = BackgroundDaemon { pid_file: pid_file.clone() };
+    let daemon = BackgroundDaemon {
+        pid_file: pid_file.clone(),
+    };
 
     let output = run(
         &[
@@ -319,12 +335,17 @@ fn rrd_ds_has_unknown_bounds_when_no_min_max_configured() {
     // With U:U bounds, rrdtool info reports NaN for min and max
     assert!(
         parse_ds_float(&info, "unbounded_metric", "min").is_none(),
-        "DS min should be NaN (Unknown) when not configured; info:\n{info}"
+        "DS min should be NaN (Unknown) when not configured, got {:?}; info:\n{info}",
+        parse_ds_float(&info, "unbounded_metric", "min")
     );
     assert!(
         parse_ds_float(&info, "unbounded_metric", "max").is_none(),
-        "DS max should be NaN (Unknown) when not configured; info:\n{info}"
+        "DS max should be NaN (Unknown) when not configured, got {:?}; info:\n{info}",
+        parse_ds_float(&info, "unbounded_metric", "max")
     );
 
-    assert!(daemon.stop_and_wait(Duration::from_secs(5)), "daemon did not stop");
+    assert!(
+        daemon.stop_and_wait(Duration::from_secs(5)),
+        "daemon did not stop"
+    );
 }
