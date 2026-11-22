@@ -61,3 +61,7 @@ path = "tests/interval_lcm.rs"
 [[test]]
 name = "rrd_min_max"
 path = "tests/rrd_min_max.rs"
+
+[[test]]
+name = "uid_gid_resolution"
+path = "tests/uid_gid_resolution.rs"

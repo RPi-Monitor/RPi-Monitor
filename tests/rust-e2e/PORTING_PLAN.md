@@ -53,7 +53,7 @@ Status meanings:
 | `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | `snmp_daemon.rs` launches the symlink entry point and verifies the pass_persist PING response | **Ported** |
 | `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | `cli_options.rs` verifies MIB generation; `snmp_daemon.rs` exercises pass_persist GET for the hostname and a post-processed dynamic metric | **Partial** — add an SNMP client/agent fixture to verify network GET |
 | `test_static_file_serving.py` | Static assets and files served from the data store | `noserver_mode.rs` verifies HTTP 200 and file content for webroot image/addon assets, configured and existing datastore RRDs, and the empty-RRD fallback for a missing RRD | **Ported** — HTTP file serving and missing-RRD fallback are covered |
-| `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | Default `user`/`group` values are asserted, but actual resolution and permissions are not | **Partial** — test process-visible behavior using safe, available identities and temporary files |
+| `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | `uid_gid_resolution.rs` configures the current available user and primary group, then verifies the created `empty.rrd` has their numeric UID/GID | **Partial** — valid user/group resolution and RRD ownership are covered; nonexistent-name fallback and server process permissions remain |
 
 ## Existing Rust black-box suites
 
@@ -72,6 +72,7 @@ Status meanings:
 - `tests/rust-e2e/tests/snmp_daemon.rs`: starts the real daemon to populate shared status, launches the `rpimonitord-snmp` symlink entry point, then verifies pass_persist PING, hostname GET, and dynamic metric GET after configured post-processing.
 - `tests/rust-e2e/tests/interactive_mode.rs`: scripts flat-file and executable-source prompts, executable rejection and re-prompt, invalid-regex recovery, extraction and post-processing validation, and confirms the observable default-config error.
 - `tests/rust-e2e/tests/interval_lcm.rs`: maxinterval = LCM of all dynamic intervals (three-interval case distinguishing LCM from GCD, single-interval boundary, coprime-prime pairs).
+- `tests/rust-e2e/tests/uid_gid_resolution.rs`: configures the current available user and primary group and verifies ownership of the created empty RRD.
 - `tests/suite/*.bats`: existing install/update/security shell scenarios are separate from the Python behavior-test inventory and must be reviewed independently before claiming full repository test coverage.
 
 ## Execution plan
