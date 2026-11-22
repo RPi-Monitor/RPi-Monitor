@@ -35,6 +35,10 @@ name = "noserver_mode"
 path = "tests/noserver_mode.rs"
 
 [[test]]
+name = "daemonize"
+path = "tests/daemonize.rs"
+
+[[test]]
 name = "rrd_creation"
 path = "tests/rrd_creation.rs"
 
