@@ -1,0 +1,67 @@
+[package]
+name = "rpimonitor-e2e"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Standalone test harness; no third-party dependencies.
+
+[[test]]
+name = "cli_options"
+path = "tests/cli_options.rs"
+
+[[test]]
+name = "configuration_cli"
+path = "tests/configuration_cli.rs"
+
+[[test]]
+name = "configuration_loadfile"
+path = "tests/configuration_loadfile.rs"
+
+[[test]]
+name = "configuration_defaults"
+path = "tests/configuration_defaults.rs"
+
+[[test]]
+name = "monitor_extraction"
+path = "tests/monitor_extraction.rs"
+
+[[test]]
+name = "cli_help"
+path = "tests/cli_help.rs"
+
+[[test]]
+name = "noserver_mode"
+path = "tests/noserver_mode.rs"
+
+[[test]]
+name = "daemonize"
+path = "tests/daemonize.rs"
+
+[[test]]
+name = "rrd_creation"
+path = "tests/rrd_creation.rs"
+
+[[test]]
+name = "alert_config"
+path = "tests/alert_config.rs"
+
+[[test]]
+name = "interactive_mode"
+path = "tests/interactive_mode.rs"
+
+[[test]]
+name = "snmp_daemon"
+path = "tests/snmp_daemon.rs"
+
+[[test]]
+name = "interval_lcm"
+path = "tests/interval_lcm.rs"
+
+[[test]]
+name = "rrd_min_max"
+path = "tests/rrd_min_max.rs"
+
+[[test]]
+name = "uid_gid_resolution"
+path = "tests/uid_gid_resolution.rs"
