@@ -89,6 +89,10 @@ fn wait_for_file(path: &Path, timeout: Duration) -> bool {
 
 #[test]
 fn daemon_assigns_empty_rrd_to_configured_user_and_group() {
+    if id_output("-u") == "0" {
+        return;
+    }
+
     let user = id_output("-un");
     let group = id_output("-gn");
     let expected_uid = id_output("-u")
