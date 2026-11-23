@@ -178,6 +178,49 @@ fn background_mode_creates_pid_file_with_valid_content() {
     );
 }
 
+#[test]
+fn background_mode_reports_invalid_pid_file_path() {
+    let dir = TempDir::new("rpimonitor-e2e-daemon-invalid-pid");
+    setup_dirs(dir.path());
+
+    let log_file = dir.path().join("daemon.log");
+    let config = write_config(
+        dir.path(),
+        "daemon-invalid-pid.conf",
+        &minimal_noserver_config(dir.path(), Some(&log_file)),
+    );
+    let pid_file = dir.path().join("missing-parent").join("rpimonitor.pid");
+
+    let output = run(
+        &[
+            OsString::from("-c"),
+            config.into_os_string(),
+            OsString::from("-b"),
+            pid_file.into_os_string(),
+        ],
+        dir.path(),
+    );
+
+    let content = wait_for_file_content(
+        &log_file,
+        "Could not open",
+        Duration::from_secs(5),
+    );
+    assert!(
+        content.is_some(),
+        "invalid PID path should be reported through the daemon logfile; \
+         launch status={:?}; stdout={:?}; stderr={:?}",
+        output.status.code(),
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let content = content.expect("read invalid PID log");
+    assert!(
+        content.contains("rpimonitor.pid"),
+        "PID-file error should identify the invalid path; log={content:?}"
+    );
+}
+
 // ---------------------------------------------------------------------------
 // Daemon detaches from terminal
 // ---------------------------------------------------------------------------
