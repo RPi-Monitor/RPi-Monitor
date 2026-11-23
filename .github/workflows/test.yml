@@ -16,7 +16,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             bubblewrap \
-            libdevel-cover-perl \
             libfile-which-perl \
             libhttp-daemon-perl \
             libipc-sharelite-perl \
@@ -31,10 +30,22 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Run end-to-end tests
-        env:
-          PERL_COVERAGE: 1
-          PERL_COVERAGE_DB: ${{ github.workspace }}/tests/cover_db-ci
-        run: cargo test --manifest-path tests/rust-e2e/Cargo.toml
+        run: |
+          if sudo env \
+            "HOME=$HOME" \
+            "PATH=$PATH" \
+            "CARGO_HOME=$CARGO_HOME" \
+            "RUSTUP_HOME=$HOME/.rustup" \
+            cargo test --manifest-path tests/rust-e2e/Cargo.toml; then
+            test_status=0
+          else
+            test_status=$?
+          fi
+
+          if [ -d tests/rust-e2e/target ]; then
+            sudo chown -R "$(id -u):$(id -g)" tests/rust-e2e/target
+          fi
+          exit "$test_status"
 
   test-installer:
     name: Test install.sh (${{ matrix.os }})
