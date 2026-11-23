@@ -53,7 +53,7 @@ Status meanings:
 | `test_snmp_daemon_runtime.py` | Symlink dispatch to SNMP daemon | `snmp_daemon.rs` launches the symlink entry point and verifies the pass_persist PING response | **Ported** |
 | `test_snmp_functionality.py` | MIB generation, dynamic metrics, SNMP GET | `cli_options.rs` verifies MIB generation; `snmp_daemon.rs` exercises pass_persist GET for the hostname and a post-processed dynamic metric | **Partial** — add an SNMP client/agent fixture to verify network GET |
 | `test_static_file_serving.py` | Static assets and files served from the data store | `noserver_mode.rs` verifies HTTP 200 and file content for webroot image/addon assets, configured and existing datastore RRDs, and the empty-RRD fallback for a missing RRD | **Ported** — HTTP file serving and missing-RRD fallback are covered |
-| `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | `uid_gid_resolution.rs` configures the current available user and primary group, then verifies the created `empty.rrd` has their numeric UID/GID | **Partial** — valid user/group resolution and RRD ownership are covered; nonexistent-name fallback and server process permissions remain |
+| `test_uid_gid_resolution.py` | Existing/nonexistent user and group resolution; file permissions | `uid_gid_resolution.rs` configures the current available user and primary group and verifies valid names resolve to their numeric UID/GID | **Partial** — valid resolution and RRD ownership are covered; nonexistent-name fallback and server process permissions remain |
 
 ## Existing Rust black-box suites
 
@@ -63,7 +63,7 @@ Status meanings:
 - `tests/rust-e2e/tests/configuration_loadfile.rs`: indexed keys, nested indexed values and arrays, multiple configuration files, default menu labels when status/statistics titles are missing, and omission of add-ons without titles.
 - `tests/rust-e2e/tests/configuration_cli.rs`: comments, includes, interval summary, nested values.
 - `tests/rust-e2e/tests/monitor_extraction.rs`: extraction-related configuration survives loading; **not runtime extraction coverage**.
-- `tests/rust-e2e/tests/noserver_mode.rs`: starts the real daemon in background no-server mode and checks command output extraction, arithmetic post-processing, static values, companion JSON files, read-only no-write, HTTP endpoints (static.json, dynamic.json, menu.json, 404, root-to-status page routing, webroot image/addon/datastore file serving, configured dynamic RRD access, missing-RRD fallback), runtime timeout, multiple capture groups, flat-file last-match, data expansion, and configured dynamic-source intervals.
+- `tests/rust-e2e/tests/noserver_mode.rs`: starts the real daemon in background no-server mode and checks command output extraction, arithmetic post-processing, static values, companion JSON files, read-only no-write, HTTP endpoints (static.json, dynamic.json, menu.json, 404, root-to-status page routing, webroot image/addon/datastore file serving, configured dynamic RRD access, missing-RRD fallback), runtime timeout, multiple capture groups, flat-file last-match, data expansion, configured dynamic-source intervals, and occupied-port startup failure.
 - `tests/rust-e2e/tests/daemonize.rs`: PID file creation and content, daemon terminal detachment, graceful SIGTERM/SIGINT, show-mode no-pidfile, SIGUSR1/SIGUSR2 log-level adjustment.
 - `tests/rust-e2e/tests/rrd_creation.rs`: stat directory creation, empty.rrd schema validation, all five dynamic RRA configurations (CF, rows, XFF), GAUGE/COUNTER/DERIVE dynamic RRD creation via `rrdtool info`, and unknown-value storage for a source that does not match.
 - `tests/rust-e2e/tests/rrd_min_max.rs`: configured and unbounded DS min/max values, including values outside configured bounds.
@@ -72,7 +72,7 @@ Status meanings:
 - `tests/rust-e2e/tests/snmp_daemon.rs`: starts the real daemon to populate shared status, launches the `rpimonitord-snmp` symlink entry point, then verifies pass_persist PING, hostname GET, and dynamic metric GET after configured post-processing.
 - `tests/rust-e2e/tests/interactive_mode.rs`: scripts flat-file and executable-source prompts, executable rejection and re-prompt, invalid-regex recovery, extraction and post-processing validation, and confirms the observable default-config error.
 - `tests/rust-e2e/tests/interval_lcm.rs`: maxinterval = LCM of all dynamic intervals (three-interval case distinguishing LCM from GCD, single-interval boundary, coprime-prime pairs).
-- `tests/rust-e2e/tests/uid_gid_resolution.rs`: configures the current available user and primary group and verifies ownership of the created empty RRD.
+- `tests/rust-e2e/tests/uid_gid_resolution.rs`: verifies valid user/group resolution and empty-RRD ownership.
 - `tests/suite/*.bats`: existing install/update/security shell scenarios are separate from the Python behavior-test inventory and must be reviewed independently before claiming full repository test coverage.
 
 ## Execution plan

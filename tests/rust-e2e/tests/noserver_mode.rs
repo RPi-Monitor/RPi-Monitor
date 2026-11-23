@@ -1,5 +1,6 @@
 use std::ffi::OsString;
 use std::fs;
+use std::net::TcpListener;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::thread;
@@ -95,6 +96,47 @@ fn assert_json_scalar(json: &str, key: &str, expected: &str) {
         json_scalar(json, key).as_deref(),
         Some(expected),
         "JSON field {key:?} should equal {expected:?}; JSON: {json}"
+    );
+}
+
+#[test]
+fn occupied_web_server_port_reports_startup_error() {
+    let directory = TempDir::new("rpimonitor-e2e-occupied-port");
+    let webroot = directory.path().join("web");
+    let datastore = directory.path().join("data");
+    fs::create_dir_all(&webroot).expect("create webroot");
+    fs::create_dir_all(datastore.join("stat")).expect("create datastore stat directory");
+
+    let listener =
+        TcpListener::bind(("127.0.0.1", 0)).expect("reserve occupied loopback port");
+    let port = listener
+        .local_addr()
+        .expect("read occupied loopback port")
+        .port();
+
+    let config = write_config(
+        directory.path(),
+        "occupied-port.conf",
+        &format!(
+            "daemon.addr=127.0.0.1\ndaemon.port={port}\ndaemon.noserver=0\ndaemon.readonly=0\ndaemon.delay=1\ndaemon.timeout=5\ndaemon.datastore={}\ndaemon.webroot={}\n",
+            datastore.display(),
+            webroot.display()
+        ),
+    );
+
+    let output = run(
+        &[OsString::from("-c"), config.into_os_string()],
+        directory.path(),
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        matches!(output.status.code(), Some(3 | 255)),
+        "occupied server port should fail startup; status={:?}; stderr={stderr:?}",
+        output.status.code()
+    );
+    assert!(
+        stderr.contains("Web server not started"),
+        "startup should report the bind failure; stderr={stderr:?}"
     );
 }
 
