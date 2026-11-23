@@ -1,204 +1,79 @@
 use std::ffi::OsString;
 use std::fs;
+use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
-use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::sync::Mutex;
 
-use rpimonitor_e2e::{run_with_stdin, write_config, TempDir};
+use rpimonitor_e2e::{binary_path, repository_root, run_with_stdin, write_config, TempDir};
 
 static INTERACTIVE_LOCK: Mutex<()> = Mutex::new(());
 
-struct DefaultConfigFixture {
-    directory_created: bool,
-    data_path: PathBuf,
-    data_backup: Option<Vec<u8>>,
-    daemon_path: PathBuf,
-    daemon_backup: Option<Vec<u8>>,
-    sudo_restore: bool,
-    sudo_directory: Option<PathBuf>,
-}
+fn run_interactive_with_temp_etc(
+    args: &[OsString],
+    working_dir: &std::path::Path,
+    input: &[u8],
+    etc_directory: &std::path::Path,
+) -> std::process::Output {
+    let root = repository_root();
+    let mut command = Command::new("bwrap");
+    command
+        .arg("--ro-bind")
+        .arg("/")
+        .arg("/")
+        .arg("--proc")
+        .arg("/proc")
+        .arg("--dev")
+        .arg("/dev")
+        .arg("--bind")
+        .arg(etc_directory)
+        .arg("/etc")
+        .arg("--bind")
+        .arg(&root)
+        .arg(&root);
 
-fn read_with_sudo(path: &Path) -> Option<Vec<u8>> {
-    let output = Command::new("sudo")
-        .args(["-n", "cat"])
-        .arg(path)
-        .output()
-        .ok()?;
-    output.status.success().then(|| output.stdout)
-}
-
-fn run_sudo_copy(source: &Path, destination: &Path) -> bool {
-    Command::new("sudo")
-        .arg("-n")
-        .arg("cp")
-        .arg("-a")
-        .arg(source)
-        .arg(destination)
-        .status()
-        .is_ok_and(|status| status.success())
-}
-
-impl DefaultConfigFixture {
-    fn install() -> Option<Self> {
-        let output = Command::new("id")
-            .arg("-u")
-            .output()
-            .expect("run id to determine fixture privileges");
-        let directory = Path::new("/etc/rpimonitor");
-        if output.status.success() && String::from_utf8_lossy(&output.stdout).trim() == "0" {
-            let directory_created = !directory.is_dir();
-            if fs::create_dir_all(directory).is_err() {
-                return None;
-            }
-
-            let data_path = directory.join("data.conf");
-            let data_backup = fs::read(&data_path).ok();
-            let daemon_path = directory.join("daemon.conf");
-            let daemon_backup = fs::read(&daemon_path).ok();
-
-            if fs::write(
-                &data_path,
-                "dynamic.1.name=existing_metric\ndynamic.1.source=/bin/echo 1\ndynamic.1.regexp=(\\d+)\\n",
-            )
-            .is_err()
-            {
-                return None;
-            }
-            if fs::write(&daemon_path, "daemon.readonly=1\n").is_err() {
-                return None;
-            }
-
-            return Some(Self {
-                directory_created,
-                data_path,
-                data_backup,
-                daemon_path,
-                daemon_backup,
-                sudo_restore: false,
-                sudo_directory: None,
-            });
-        }
-
-        let sudo = Command::new("sudo")
-            .args(["-n", "true"])
-            .status()
-            .ok()?;
-        if !sudo.success() {
-            return None;
-        }
-
-        let nonce = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .ok()?
-            .as_nanos();
-        let sudo_directory =
-            std::env::temp_dir().join(format!("rpimonitor-config-fixture-{nonce}"));
-        fs::create_dir_all(&sudo_directory).ok()?;
-
-        let directory_created = !directory.is_dir();
-        let mkdir = Command::new("sudo")
-            .args(["-n", "mkdir", "-p", "/etc/rpimonitor"])
-            .status()
-            .ok()?;
-        if !mkdir.success() {
-            let _ = fs::remove_dir_all(&sudo_directory);
-            return None;
-        }
-
-        let data_path = directory.join("data.conf");
-        let daemon_path = directory.join("daemon.conf");
-        let data_backup = read_with_sudo(&data_path);
-        let daemon_backup = read_with_sudo(&daemon_path);
-
-        let data_fixture = sudo_directory.join("data.conf");
-        let daemon_fixture = sudo_directory.join("daemon.conf");
-        fs::write(
-            &data_fixture,
-            "dynamic.1.name=existing_metric\ndynamic.1.source=/bin/echo 1\ndynamic.1.regexp=(\\d+)\\n",
-        )
-        .ok()?;
-        fs::write(&daemon_fixture, "daemon.readonly=1\n").ok()?;
-
-        if !run_sudo_copy(&data_fixture, &data_path)
-            || !run_sudo_copy(&daemon_fixture, &daemon_path)
-        {
-            let _ = fs::remove_dir_all(&sudo_directory);
-            return None;
-        }
-
-        Some(Self {
-            directory_created,
-            data_path,
-            data_backup,
-            daemon_path,
-            daemon_backup,
-            sudo_restore: true,
-            sudo_directory: Some(sudo_directory),
-        })
+    if std::env::var("PERL_COVERAGE").as_deref() == Ok("1") {
+        let coverage_db = std::env::var_os("PERL_COVERAGE_DB")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|| root.join("tests/cover_db"));
+        let coverage_options = format!(
+            "-MDevel::Cover=-db,{},-silent,1,+ignore,perl_unit\\.pl",
+            coverage_db.display()
+        );
+        let support = root.join("tests/rust-e2e/support");
+        command
+            .arg("perl")
+            .arg(coverage_options)
+            .arg(format!("-I{}", support.display()))
+            .arg("-MDevel::Cover::Signal")
+            .arg(binary_path());
+    } else {
+        command.arg(binary_path());
     }
-}
+    command.args(args);
+    command
+        .current_dir(working_dir)
+        .env_clear()
+        .env("PATH", "/usr/bin:/bin")
+        .env("HOME", working_dir)
+        .env("LC_ALL", "C")
+        .env("LANGUAGE", "C")
+        .env("LANG", "C")
+        .env("LC_CTYPE", "C")
+        .env("PERL_COVERAGE", std::env::var("PERL_COVERAGE").unwrap_or_default())
+        .env("PERL_COVERAGE_DB", std::env::var("PERL_COVERAGE_DB").unwrap_or_default())
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
 
-impl Drop for DefaultConfigFixture {
-    fn drop(&mut self) {
-        if self.sudo_restore {
-            if let Some(directory) = &self.sudo_directory {
-                let data_backup = directory.join("data.conf.backup");
-                let daemon_backup = directory.join("daemon.conf.backup");
-                match &self.data_backup {
-                    Some(content) => {
-                        let _ = fs::write(&data_backup, content);
-                        let _ = run_sudo_copy(&data_backup, &self.data_path);
-                    }
-                    None => {
-                        let _ = Command::new("sudo")
-                            .args(["-n", "rm", "-f"])
-                            .arg(&self.data_path)
-                            .status();
-                    }
-                }
-                match &self.daemon_backup {
-                    Some(content) => {
-                        let _ = fs::write(&daemon_backup, content);
-                        let _ = run_sudo_copy(&daemon_backup, &self.daemon_path);
-                    }
-                    None => {
-                        let _ = Command::new("sudo")
-                            .args(["-n", "rm", "-f"])
-                            .arg(&self.daemon_path)
-                            .status();
-                    }
-                }
-                if self.directory_created {
-                    let _ = Command::new("sudo")
-                        .args(["-n", "rmdir", "/etc/rpimonitor"])
-                        .status();
-                }
-                let _ = fs::remove_dir_all(directory);
-            }
-            return;
-        }
-
-        match &self.data_backup {
-            Some(content) => {
-                let _ = fs::write(&self.data_path, content);
-            }
-            None => {
-                let _ = fs::remove_file(&self.data_path);
-            }
-        }
-        match &self.daemon_backup {
-            Some(content) => {
-                let _ = fs::write(&self.daemon_path, content);
-            }
-            None => {
-                let _ = fs::remove_file(&self.daemon_path);
-            }
-        }
-        if self.directory_created {
-            let _ = fs::remove_dir("/etc/rpimonitor");
-        }
-    }
+    let mut child = command.spawn().expect("launch rpimonitord in Bubblewrap");
+    child
+        .stdin
+        .take()
+        .expect("open rpimonitord stdin")
+        .write_all(input)
+        .expect("write scripted stdin");
+    child.wait_with_output().expect("wait for rpimonitord")
 }
 
 #[test]
@@ -495,9 +370,9 @@ fn interactive_helper_reprompts_when_postprocessing_formula_is_rejected() {
 #[test]
 fn interactive_helper_prints_dynamic_configuration_template() {
     let _interactive_lock = INTERACTIVE_LOCK.lock().expect("lock interactive tests");
-    let Some(_fixture) = DefaultConfigFixture::install() else {
+    if Command::new("bwrap").arg("--version").output().is_err() {
         return;
-    };
+    }
 
     let directory = TempDir::new("rpimonitor-e2e-interactive-template");
     let webroot = directory.path().join("web");
@@ -507,6 +382,27 @@ fn interactive_helper_prints_dynamic_configuration_template() {
 
     let source = directory.path().join("metrics.txt");
     fs::write(&source, "load=42\n").expect("write source fixture");
+
+    let isolated_etc = directory.path().join("etc");
+    fs::create_dir_all(isolated_etc.join("rpimonitor")).expect("create isolated /etc/rpimonitor");
+    for filename in ["passwd", "group", "hosts", "resolv.conf", "nsswitch.conf"] {
+        let source = std::path::Path::new("/etc").join(filename);
+        if let Ok(content) = fs::read(&source) {
+            fs::write(isolated_etc.join(filename), content)
+                .expect("copy host system identity fixture");
+        }
+    }
+    fs::write(
+        isolated_etc.join("rpimonitor/data.conf"),
+        "dynamic.1.name=existing_metric\ndynamic.1.source=/bin/echo 1\ndynamic.1.regexp=(\\d+)\\n",
+    )
+    .expect("write isolated default data config");
+    fs::write(
+        isolated_etc.join("rpimonitor/daemon.conf"),
+        "daemon.readonly=1\n",
+    )
+    .expect("write isolated default daemon config");
+
     let config = write_config(
         directory.path(),
         "interactive-template.conf",
@@ -520,7 +416,7 @@ fn interactive_helper_prints_dynamic_configuration_template() {
         "\n{}\ny\n(\\d+)\ny\n$1 * 2\ny\nn\n",
         source.display()
     );
-    let output = run_with_stdin(
+    let output = run_interactive_with_temp_etc(
         &[
             OsString::from("-c"),
             config.into_os_string(),
@@ -528,6 +424,7 @@ fn interactive_helper_prints_dynamic_configuration_template() {
         ],
         directory.path(),
         input.as_bytes(),
+        &isolated_etc,
     );
 
     assert!(
